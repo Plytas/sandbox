@@ -9,23 +9,16 @@ let zoom = {
     scale: 2.5,
 };
 let scrollStep = 5;
-let mapSize = {
-    x: 1000,
-    y: 1000,
-};
-let canvasSize = {
-    x: 500,
-    y: 500,
-};
-let origin = {
-    x: 0,
-    y: 0,
-};
-let objectMap = Array.from(Array(mapSize.x / gridSize), (item, x) =>
-    Array(mapSize.y / gridSize)
-);
+let mapSize = new p5.Vector(1000, 1000);
+let canvasSize = new p5.Vector(500, 500);
+let origin = new p5.Vector(0, 0);
+
+let objectMap = new ObjectMap();
 
 let inHand = null;
+/**
+ * @type {{Down: number, Left: number, Right: number, Up: number}}
+ */
 const Direction = {
     Up: 0,
     Down: Math.PI,
@@ -98,13 +91,16 @@ function draw() {
     }
 }
 
+/**
+ * @param {p5.Vector} cell
+ */
 function drawMouseSquare(cell) {
     push();
 
     strokeWeight(1);
     stroke(51);
 
-    if (outOfBounds() || !cellIsEmpty(cell)) {
+    if (outOfBounds() || !objectMap.cellIsEmpty(cell)) {
         fill(200, 0, 0, 100);
     } else {
         fill(200, 200, 200, 200);
@@ -116,7 +112,7 @@ function drawMouseSquare(cell) {
         inHand.position(cell);
 
         push();
-        if (!cellIsEmpty(cell)) {
+        if (!objectMap.cellIsEmpty(cell)) {
             translate(2, 2);
         }
         inHand.draw();
@@ -140,17 +136,16 @@ function minY() {
 }
 
 function maxX() {
-    return (
-        mapSize.x * zoom.scale - (gridSize * zoom.scale) / 2 - canvasSize.x / 2
-    );
+    return mapSize.x * zoom.scale - (gridSize * zoom.scale) / 2 - canvasSize.x / 2;
 }
 
 function maxY() {
-    return (
-        mapSize.y * zoom.scale - (gridSize * zoom.scale) / 2 - canvasSize.y / 2
-    );
+    return mapSize.y * zoom.scale - (gridSize * zoom.scale) / 2 - canvasSize.y / 2;
 }
 
+/**
+ * @param {p5.Vector} position
+ */
 function performMove(position) {
     origin.x += position.x;
     origin.y += position.y;
@@ -176,36 +171,39 @@ function move() {
     if (keyIsDown(LEFT_ARROW) || keyIsDown(65)) {
         dump(origin);
 
-        performMove({x: -scrollStep, y: 0});
+        performMove(new p5.Vector(-scrollStep, 0));
     }
 
     if (keyIsDown(RIGHT_ARROW) || keyIsDown(68)) {
         dump(origin);
 
-        performMove({x: scrollStep, y: 0});
+        performMove(new p5.Vector(scrollStep, 0));
     }
 
     if (keyIsDown(UP_ARROW) || keyIsDown(87)) {
         dump(origin);
 
-        performMove({x: 0, y: -scrollStep});
+        performMove(new p5.Vector(0, -scrollStep));
     }
 
     if (keyIsDown(DOWN_ARROW) || keyIsDown(83)) {
         dump(origin);
 
-        performMove({x: 0, y: scrollStep});
+        performMove(new p5.Vector(0, scrollStep));
     }
 
     translate(-origin.x, -origin.y);
     scale(zoom.scale);
 }
 
+/**
+ * @returns {p5.Vector}
+ */
 function mouseCell() {
-    return {
-        x: floor((mouseX + origin.x) / (gridSize * zoom.scale)),
-        y: floor((mouseY + origin.y) / (gridSize * zoom.scale)),
-    };
+    return new p5.Vector(
+        Math.floor((mouseX + origin.x) / (gridSize * zoom.scale)),
+        Math.floor((mouseY + origin.y) / (gridSize * zoom.scale)),
+    );
 }
 
 function outOfBounds() {
@@ -217,23 +215,15 @@ function outOfBounds() {
     );
 }
 
-function cellIsEmpty(cell) {
-    return (
-        objectMap[cell.x] === undefined ||
-        objectMap[cell.x][cell.y] === undefined ||
-        objectMap[cell.x][cell.y].isEmpty()
-    );
-}
-
 function click() {
     if (outOfBounds()) {
         return;
     }
 
-    cell = mouseCell();
+    let cell = mouseCell();
 
     if (inHand !== null) {
-        if (cellIsEmpty(cell)) {
+        if (objectMap.cellIsEmpty(cell)) {
             if (inHand.entity instanceof Belt) {
                 createBelt();
             } else if (inHand.entity instanceof Extractor) {
@@ -244,38 +234,32 @@ function click() {
         return;
     }
 
-    if (!cellIsEmpty(cell)) {
-        return deleteObjectInCell(cell);
-    }
+    objectMap.deleteObjectInCell(cell);
 }
 
 function createBelt() {
-    cell = inHand.position();
+    handCell = inHand.position();
     belt = new Belt(inHand.entity.direction);
-    entity = new Cell(cell, belt);
-    objectMap[cell.x][cell.y] = entity;
+    cell = new Cell(handCell, belt);
+    objectMap.setCell(cell);
 
     translate(-origin.x, -origin.y);
     scale(zoom.scale);
-    entity.draw();
+    cell.draw();
 
-    belts.push(entity);
+    belts.push(cell);
 }
 
 function createMiner() {
-    cell = inHand.position();
+    handCell = inHand.position();
     miner = new Extractor(inHand.entity.direction);
-    entity = new Cell(cell, miner);
-    objectMap[cell.x][cell.y] = entity;
+    cell = new Cell(handCell, miner);
+    objectMap.setCell(cell);
 
     translate(-origin.x, -origin.y);
     scale(zoom.scale);
-    entity.draw();
-    miners.push(entity);
-}
-
-function deleteObjectInCell(cell) {
-    objectMap[cell.x][cell.y].destroy();
+    cell.draw();
+    miners.push(cell);
 }
 
 function rotateObjectInCell(cell, clockwise = true) {
@@ -283,9 +267,13 @@ function rotateObjectInCell(cell, clockwise = true) {
 }
 
 function wheel(event) {
-    performZoom({x: event.x, y: event.y}, event.deltaY > 0)
+    performZoom(new p5.Vector(event.x, event.y), event.deltaY > 0)
 }
 
+/**
+ * @param {p5.Vector} point
+ * @param {boolean} out
+ */
 function performZoom(point, out = false) {
     let step = out ? -zoom.step : +zoom.step;
     let newScale = max(zoom.min, min(zoom.max, zoom.scale + step));
@@ -317,6 +305,7 @@ function performZoom(point, out = false) {
 }
 
 function keyPressed(event) {
+    let cell;
     dump(event);
 
     if (keyCode === 88) {
@@ -332,9 +321,10 @@ function keyPressed(event) {
             inHand.rotate(!event.shiftKey);
             globalDirection = inHand.entity.direction;
             dump(globalDirection);
-        } else if (!cellIsEmpty(cell)) {
-            return rotateObjectInCell(cell, !event.shiftKey);
+            return
         }
+
+        return objectMap.rotateObjectInCell(cell, !event.shiftKey);
     }
 
     if (keyCode === 66) {
@@ -367,8 +357,8 @@ function keyPressed(event) {
 
         if (inHand !== null) {
             inHand = null;
-        } else if (!cellIsEmpty(cell)) {
-            cellObject = objectMap[cell.x][cell.y];
+        } else if (!objectMap.cellIsEmpty(cell)) {
+            cellObject = objectMap.getCell(cell);
 
             globalDirection = cellObject.entity.direction;
             inHand = new Cell(
@@ -416,7 +406,7 @@ function touchMove(event) {
             });
 
             if (abs(firstDistance - lastDistance) > 10) {
-                performZoom({x: canvasSize.x / 2, y: canvasSize.y / 2}, lastDistance > firstDistance);
+                performZoom(new p5.Vector(canvasSize.x / 2, canvasSize.y / 2), firstDistance > lastDistance);
                 touchZoom = [];
             }
         }
@@ -433,10 +423,7 @@ function touchMove(event) {
             firstTouch = touchMovement[0];
             lastTouch = touchMovement[touchMovement.length - 1];
 
-            performMove({
-                x: lastTouch.clientX - firstTouch.clientX,
-                y: lastTouch.clientY - firstTouch.clientY
-            })
+            performMove(new p5.Vector(lastTouch.clientX - firstTouch.clientX, lastTouch.clientY - firstTouch.clientY));
         }
     }
 }
