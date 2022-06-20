@@ -231,7 +231,7 @@ function click() {
     if (cellIsEmpty(cell)) {
       if (inHand.entity instanceof Belt) {
         createBelt();
-      } else if (inHand.entity instanceof Miner) {
+      } else if (inHand.entity instanceof Extractor) {
         createMiner();
       }
     }
@@ -259,7 +259,7 @@ function createBelt() {
 
 function createMiner() {
   cell = inHand.position();
-  miner = new Miner(inHand.entity.direction);
+  miner = new Extractor(inHand.entity.direction);
   entity = new Cell(cell, miner);
   objectMap[cell.x][cell.y] = entity;
 
@@ -341,7 +341,7 @@ function keyPressed(event) {
     //m
 
     cell = mouseCell();
-    inHand = new Cell(cell, new Miner(globalDirection, true));
+    inHand = new Cell(cell, new Extractor(globalDirection, true));
   }
 
   if (keyCode === 70) {

@@ -1,4 +1,4 @@
-class Miner extends Entity {
+class Extractor extends Entity {
   constructor(direction = Direction.Up, isGhost = false) {
     super(direction, isGhost);
     this.speed = 0.5;
