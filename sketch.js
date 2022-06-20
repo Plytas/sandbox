@@ -1,6 +1,4 @@
 let debug = false;
-let miners = [];
-let belts = [];
 let gridSize = 20;
 let zoom = {
     min: 1,
@@ -50,31 +48,7 @@ function draw() {
     fill(220);
     rect(0, 0, mapSize.x, mapSize.y);
 
-    miners
-        .slice()
-        .reverse()
-        .forEach(function (miner, index, list) {
-            if (miner.isEmpty()) {
-                miners.splice(list.length - 1 - index, 1);
-                return;
-            }
-
-            miner.work();
-            miner.draw();
-        });
-
-    belts
-        .slice()
-        .reverse()
-        .forEach(function (belt, index, list) {
-            if (belt.isEmpty()) {
-                belts.splice(list.length - 1 - index, 1);
-                return;
-            }
-
-            belt.work();
-            belt.draw();
-        });
+    objectMap.processCells();
 
     drawMouseSquare(mouseCell());
 
@@ -82,7 +56,7 @@ function draw() {
 
     if (debug) {
         fill(255);
-        text(miners.length, 20, 20);
+        text(objectMap.extractors.length, 20, 20);
 
         rectMode(CENTER);
         fill(0);
@@ -227,7 +201,7 @@ function click() {
             if (inHand.entity instanceof Belt) {
                 createBelt();
             } else if (inHand.entity instanceof Extractor) {
-                createMiner();
+                createExtractor();
             }
         }
 
@@ -247,23 +221,20 @@ function createBelt() {
     scale(zoom.scale);
     cell.draw();
 
-    belts.push(cell);
+    objectMap.belts.push(cell);
 }
 
-function createMiner() {
+function createExtractor() {
     handCell = inHand.position();
-    miner = new Extractor(inHand.entity.direction);
-    cell = new Cell(handCell, miner);
+    extractor = new Extractor(inHand.entity.direction);
+    cell = new Cell(handCell, extractor);
     objectMap.setCell(cell);
 
     translate(-origin.x, -origin.y);
     scale(zoom.scale);
     cell.draw();
-    miners.push(cell);
-}
 
-function rotateObjectInCell(cell, clockwise = true) {
-    objectMap[cell.x][cell.y].rotate(clockwise);
+    objectMap.extractors.push(cell);
 }
 
 function wheel(event) {
@@ -329,7 +300,6 @@ function keyPressed(event) {
 
     if (keyCode === 66) {
         //b
-
         cell = mouseCell();
 
         dump(globalDirection);
@@ -338,8 +308,8 @@ function keyPressed(event) {
 
     if (keyCode === 77) {
         //m
-
         cell = mouseCell();
+
         inHand = new Cell(cell, new Extractor(globalDirection, true));
     }
 

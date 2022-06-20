@@ -2,6 +2,10 @@ class ObjectMap {
     constructor() {
         /** @type {Cell[][]} */
         this.cells = [];
+        /** @type {Cell[]} */
+        this.extractors = [];
+        /** @type {Cell[]} */
+        this.belts = [];
     }
 
     /**
@@ -44,8 +48,8 @@ class ObjectMap {
      */
     rotateObjectInCell(cell, clockwise = true) {
         if (this.cells[cell.x] === undefined
-        || this.cells[cell.x][cell.y] === undefined
-        || this.cells[cell.x][cell.y].isEmpty()) {
+            || this.cells[cell.x][cell.y] === undefined
+            || this.cells[cell.x][cell.y].isEmpty()) {
             return;
         }
 
@@ -63,5 +67,40 @@ class ObjectMap {
         }
 
         this.cells[cell.x][cell.y].destroy();
+    }
+
+    processCells() {
+        this.processExtractors();
+        this.processBelts();
+    }
+
+    processExtractors() {
+        this.extractors
+            .slice()
+            .reverse()
+            .forEach(function (cell, index, list) {
+                if (cell.isEmpty()) {
+                    list.splice(list.length - 1 - index, 1);
+                    return;
+                }
+
+                cell.work();
+                cell.draw();
+            });
+    }
+
+    processBelts() {
+        this.belts
+            .slice()
+            .reverse()
+            .forEach(function (cell, index, list) {
+                if (cell.isEmpty()) {
+                    list.splice(list.length - 1 - index, 1);
+                    return;
+                }
+
+                cell.work();
+                cell.draw();
+            });
     }
 }
