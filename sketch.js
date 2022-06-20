@@ -177,50 +177,24 @@ function move() {
         dump(origin);
 
         performMove({x: -scrollStep, y: 0});
-        // if (origin.x > minX()) {
-        //     origin.x -= scrollStep;
-        //
-        //     if (origin.x < minX()) {
-        //         origin.x = minX();
-        //     }
-        // }
     }
 
     if (keyIsDown(RIGHT_ARROW) || keyIsDown(68)) {
         dump(origin);
 
         performMove({x: scrollStep, y: 0});
-        // if (origin.x < maxX()) {
-        //     origin.x += scrollStep;
-        //     if (origin.x > maxX()) {
-        //         origin.x = maxX();
-        //     }
-        // }
     }
 
     if (keyIsDown(UP_ARROW) || keyIsDown(87)) {
         dump(origin);
 
         performMove({x: 0, y: -scrollStep});
-        // if (origin.y > minY()) {
-        //     origin.y -= scrollStep;
-        //
-        //     if (origin.y < minY()) {
-        //         origin.y = minY();
-        //     }
-        // }
     }
 
     if (keyIsDown(DOWN_ARROW) || keyIsDown(83)) {
         dump(origin);
 
         performMove({x: 0, y: scrollStep});
-        // if (origin.y < maxY()) {
-        //     origin.y += scrollStep;
-        //     if (origin.y > maxY()) {
-        //         origin.y = maxY();
-        //     }
-        // }
     }
 
     translate(-origin.x, -origin.y);
@@ -467,7 +441,11 @@ function touchMove(event) {
     }
 }
 
-function touchEnded() {
+function touchEnded(event) {
+    if (event.type === 'mouseup') {
+        return;
+    }
+
     let fs = fullscreen();
 
     if (!fs) {
