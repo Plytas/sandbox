@@ -63,4 +63,11 @@ class Direction {
     counterclockwise() {
         return new Direction((this.value + 3) % 4);
     }
+
+    /**
+     * @return {Direction}
+     */
+    opposite() {
+        return new Direction((this.value + 2) % 4);
+    }
 }

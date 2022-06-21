@@ -7,6 +7,7 @@ class Belt extends Entity {
         super(direction, isGhost);
         this.item = null;
         this.progress = 0;
+        this.reset = false;
     }
 
     /**
@@ -24,18 +25,26 @@ class Belt extends Entity {
             fill(0);
         }
         triangle(-8, 8, 0, -8, 8, 8);
-        pop();
 
-        if (!this.isGhost) {
-            fill(255);
-            rect(cell.x * gridSize + 2, cell.y * gridSize + 2, ((gridSize - 4) * this.progress) / 100, 2);
+        if (!this.isGhost && this.item !== null) {
+            fill(53, 77, 117);
+            rectMode(CENTER);
+            rect(0, gridSize / 2 - (gridSize * this.progress / 100), 4, 4);
         }
+
+        pop();
     }
 
     /**
      * @param {Cell} cell
      */
     work(cell) {
+        if (this.reset) {
+            this.reset = false;
+            this.item = null;
+            this.progress = 0;
+        }
+
         if (this.item === null) {
             this.progress = 0;
             return;
@@ -46,8 +55,7 @@ class Belt extends Entity {
             let object = objectMap.getCell(nextCell)
 
             if (object !== null && object.acceptItem(this.direction, this.item)) {
-                this.item = null;
-                this.progress = 0;
+                this.reset = true;
             }
 
             return;
