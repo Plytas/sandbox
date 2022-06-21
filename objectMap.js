@@ -34,8 +34,7 @@ class ObjectMap {
      * @returns {null|Cell}
      */
     getCell(cell) {
-        if (this.cells[cell.x] === undefined
-            || this.cells[cell.x][cell.y] === undefined) {
+        if (this.cellIsEmpty(cell)) {
             return null;
         }
 
@@ -47,9 +46,7 @@ class ObjectMap {
      * @param {boolean} clockwise
      */
     rotateObjectInCell(cell, clockwise = true) {
-        if (this.cells[cell.x] === undefined
-            || this.cells[cell.x][cell.y] === undefined
-            || this.cells[cell.x][cell.y].isEmpty()) {
+        if (this.cellIsEmpty(cell)) {
             return;
         }
 
@@ -60,10 +57,8 @@ class ObjectMap {
      * @param {p5.Vector} cell
      */
     deleteObjectInCell(cell) {
-        if (this.cells[cell.x] === undefined
-            || this.cells[cell.x][cell.y] === undefined
-            || this.cells[cell.x][cell.y].isEmpty()) {
-            return;
+        if (this.cellIsEmpty(cell)) {
+
         }
 
         this.cells[cell.x][cell.y].destroy();

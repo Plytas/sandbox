@@ -1,4 +1,13 @@
 class Belt extends Entity {
+    /**
+     * @param {number} direction
+     * @param {boolean} isGhost
+     */
+    constructor(direction = Direction.Up, isGhost = false) {
+        super(direction, isGhost);
+        this.item = null;
+        this.progress = 0;
+    }
 
     /**
      * @param {p5.Vector} cell
@@ -15,11 +24,62 @@ class Belt extends Entity {
             fill(0);
         }
         triangle(-8, 8, 0, -8, 8, 8);
-
         pop();
+
+        if (!this.isGhost) {
+            fill(255);
+            rect(cell.x * gridSize + 2, cell.y * gridSize + 2, ((gridSize - 4) * this.progress) / 100, 2);
+        }
     }
 
-    work() {
+    /**
+     * @param {Cell} cell
+     */
+    work(cell) {
+        if (this.item === null) {
+            this.progress = 0;
+            return;
+        }
 
+        if (this.progress === 100) {
+            let nextCell = cell.nextCell()
+            let object = objectMap.getCell(nextCell)
+
+            if (object !== null && object.acceptItem(this.direction, this.item)) {
+                this.item = null;
+                this.progress = 0;
+            }
+
+            return;
+        }
+
+        this.progress += 1;
+    }
+
+    /**
+     * @param {number} direction
+     * @param {null} item
+     * @returns {boolean}
+     */
+    acceptsItem(direction, item = null) {
+        return true
+    }
+
+    /**
+     * @param {number} direction
+     * @return {boolean}
+     */
+    isAcceptingItems(direction) {
+        return this.item === null;
+    }
+
+    acceptItem(direction, item) {
+        if (this.item !== null) {
+            return false;
+        }
+
+        this.item = item;
+
+        return true;
     }
 }

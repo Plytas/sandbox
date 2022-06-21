@@ -16,7 +16,10 @@ class Extractor extends Entity {
         this.steps = 0;
     }
 
-    work() {
+    /**
+     * @param {Cell} cell
+     */
+    work(cell) {
         if (this.steps >= this.craftingTime) {
             this.produce();
         }

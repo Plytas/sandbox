@@ -20,7 +20,7 @@ let inHand = null;
 const Direction = {
     Up: 0,
     Down: Math.PI,
-    Left: -Math.PI / 2,
+    Left: 3 * Math.PI / 2,
     Right: Math.PI / 2,
 };
 let globalDirection = 0;
@@ -195,6 +195,7 @@ function click() {
     }
 
     let cell = mouseCell();
+    let object = objectMap.getCell(cell);
 
     if (inHand !== null) {
         if (objectMap.cellIsEmpty(cell)) {
@@ -204,6 +205,16 @@ function click() {
                 createExtractor();
             }
         }
+
+        return;
+    }
+
+    if (object.isEmpty()) {
+        return;
+    }
+
+    if (object.entity instanceof Belt) {
+        object.acceptItem(Direction.Up, 'coal');
 
         return;
     }

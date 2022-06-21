@@ -26,7 +26,36 @@ class Entity {
 
     }
 
-    work() {
+    /**
+     * @param {Cell} cell
+     */
+    work(cell) {
 
+    }
+
+    /**
+     * @param {number} direction
+     * @param {*} item
+     * @returns {boolean}
+     */
+    acceptsItem(direction, item) {
+        return false
+    }
+
+    /**
+     * @param {number} direction
+     * @return {boolean}
+     */
+    isAcceptingItems(direction) {
+        return false
+    }
+
+    /**
+     * @param {number} direction
+     * @param {*} item
+     * @return {boolean}
+     */
+    acceptItem(direction, item) {
+        return false
     }
 }

@@ -35,24 +35,77 @@ class Cell {
     }
 
     draw() {
-        if (!this.isEmpty()) {
-            this.entity.draw(new p5.Vector(this.x, this.y));
+        if (this.isEmpty()) {
+            return;
         }
+
+        this.entity.draw(new p5.Vector(this.x, this.y));
     }
 
     work() {
-        if (!this.isEmpty()) {
-            this.entity.work();
+        if (this.isEmpty()) {
+            return;
         }
+
+        this.entity.work(this);
     }
 
     /**
      * @param {boolean} clockwise
      */
     rotate(clockwise = true) {
-        if (!this.isEmpty()) {
-            this.entity.rotate(clockwise);
+        if (this.isEmpty()) {
+            return;
         }
+
+        this.entity.rotate(clockwise);
+    }
+
+    /**
+     * @param {number} direction
+     * @param {null} item
+     * @returns {boolean}
+     */
+    acceptsItem(direction, item = null) {
+        if (this.isEmpty()) {
+            return false;
+        }
+
+        return this.entity.acceptsItem(direction, item);
+    }
+
+    /**
+     * @param {number|null} direction
+     * @return {boolean}
+     */
+    isAcceptingItems(direction) {
+        if (this.isEmpty()) {
+            return false;
+        }
+
+        return this.entity.isAcceptingItems(direction);
+    }
+
+    /**
+     *
+     * @param direction
+     * @param item
+     * @return {boolean}
+     */
+    acceptItem(direction, item) {
+        if (this.isEmpty()) {
+            return false;
+        }
+
+        if (!this.acceptsItem(direction, item)) {
+            return false
+        }
+
+        if (!this.isAcceptingItems(direction)) {
+            return false;
+        }
+
+        return this.entity.acceptItem(direction, item);
     }
 
     /**
