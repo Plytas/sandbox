@@ -1,6 +1,6 @@
 class Extractor extends Entity {
     /**
-     * @param {number} direction
+     * @param {Direction} direction
      * @param {boolean} isGhost
      */
     constructor(direction = Direction.Up, isGhost = false) {

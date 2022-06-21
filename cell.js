@@ -62,8 +62,8 @@ class Cell {
     }
 
     /**
-     * @param {number} direction
-     * @param {null} item
+     * @param {Direction} direction
+     * @param {*} item
      * @returns {boolean}
      */
     acceptsItem(direction, item = null) {
@@ -75,7 +75,7 @@ class Cell {
     }
 
     /**
-     * @param {number|null} direction
+     * @param {Direction} direction
      * @return {boolean}
      */
     isAcceptingItems(direction) {
@@ -88,8 +88,8 @@ class Cell {
 
     /**
      *
-     * @param direction
-     * @param item
+     * @param {Direction} direction
+     * @param {*} item
      * @return {boolean}
      */
     acceptItem(direction, item) {
@@ -109,7 +109,7 @@ class Cell {
     }
 
     /**
-     * @param {number|null} direction
+     * @param {Direction|null} direction
      * @returns {p5.Vector|null}
      */
     nextCell(direction = null) {
@@ -121,17 +121,16 @@ class Cell {
             direction = this.entity.direction;
         }
 
-        switch (direction) {
-            case Direction.Up:
+
+        switch (direction.value) {
+            case Direction.Up.value:
                 return new p5.Vector(this.x, this.y - 1);
-            case Direction.Down:
+            case Direction.Down.value:
                 return new p5.Vector(this.x, this.y + 1);
-            case Direction.Left:
+            case Direction.Left.value:
                 return new p5.Vector(this.x - 1, this.y);
-            case Direction.Right:
+            case Direction.Right.value:
                 return new p5.Vector(this.x + 1, this.y);
-            default:
-                return null;
         }
     }
 }

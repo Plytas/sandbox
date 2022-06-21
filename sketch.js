@@ -14,16 +14,7 @@ let origin = new p5.Vector(0, 0);
 let objectMap = new ObjectMap();
 
 let inHand = null;
-/**
- * @type {{Down: number, Left: number, Right: number, Up: number}}
- */
-const Direction = {
-    Up: 0,
-    Down: Math.PI,
-    Left: 3 * Math.PI / 2,
-    Right: Math.PI / 2,
-};
-let globalDirection = 0;
+let globalDirection = Direction.Up;
 
 let touchZoom = [];
 let touchMovement = [];
@@ -209,7 +200,7 @@ function click() {
         return;
     }
 
-    if (object.isEmpty()) {
+    if (object === null || object.isEmpty()) {
         return;
     }
 

@@ -1,6 +1,6 @@
 class Belt extends Entity {
     /**
-     * @param {number} direction
+     * @param {Direction} direction
      * @param {boolean} isGhost
      */
     constructor(direction = Direction.Up, isGhost = false) {
@@ -16,7 +16,7 @@ class Belt extends Entity {
         push();
         translate(cell.x * gridSize + gridSize / 2, cell.y * gridSize + gridSize / 2);
 
-        rotate(this.direction);
+        rotate(this.direction.rotation());
 
         if (this.isGhost) {
             fill(40, 40, 40, 40);
@@ -57,8 +57,8 @@ class Belt extends Entity {
     }
 
     /**
-     * @param {number} direction
-     * @param {null} item
+     * @param {Direction} direction
+     * @param {*} item
      * @returns {boolean}
      */
     acceptsItem(direction, item = null) {
@@ -66,13 +66,18 @@ class Belt extends Entity {
     }
 
     /**
-     * @param {number} direction
+     * @param {Direction} direction
      * @return {boolean}
      */
     isAcceptingItems(direction) {
         return this.item === null;
     }
 
+    /**
+     * @param {Direction} direction
+     * @param {*} item
+     * @return {boolean}
+     */
     acceptItem(direction, item) {
         if (this.item !== null) {
             return false;
