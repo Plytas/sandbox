@@ -70,4 +70,12 @@ class Direction {
     opposite() {
         return new Direction((this.value + 2) % 4);
     }
+
+    /**
+     * @param {Direction} direction
+     * @return {Direction}
+     */
+    inRelationToDirection(direction) {
+        return new Direction((4 + this.value - direction.value) % 4);
+    }
 }

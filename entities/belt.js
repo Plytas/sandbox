@@ -8,6 +8,7 @@ class Belt extends Entity {
         this.item = null;
         this.progress = 0;
         this.reset = false;
+        this.fromDirection = direction.opposite();
     }
 
     /**
@@ -29,7 +30,18 @@ class Belt extends Entity {
         if (!this.isGhost && this.item !== null) {
             fill(53, 77, 117);
             rectMode(CENTER);
-            rect(0, gridSize / 2 - (gridSize * this.progress / 100), 4, 4);
+
+            if (this.progress < 60) {
+                if (this.fromDirection.value === Direction.Left.value) {
+                    rect(-(gridSize / 2 - (gridSize * this.progress / 100)) - 2, 0, 4, 4);
+                } else if (this.fromDirection.value === Direction.Right.value) {
+                    rect((gridSize / 2 - (gridSize * this.progress / 100)) + 2, 0, 4, 4);
+                } else {
+                    rect(0, gridSize / 2 - (gridSize * this.progress / 100) + 2, 4, 4);
+                }
+            } else {
+                rect(0, gridSize / 2 - (gridSize * this.progress / 100) + 2, 4, 4);
+            }
         }
 
         pop();
@@ -78,6 +90,10 @@ class Belt extends Entity {
      * @return {boolean}
      */
     isAcceptingItems(direction) {
+        if (direction.opposite().value === this.direction.value) {
+            return false;
+        }
+
         return this.item === null;
     }
 
@@ -92,6 +108,7 @@ class Belt extends Entity {
         }
 
         this.item = item;
+        this.fromDirection = direction.opposite().inRelationToDirection(this.direction);
 
         return true;
     }

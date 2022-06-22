@@ -205,7 +205,7 @@ function click() {
     }
 
     if (object.entity instanceof Belt) {
-        object.acceptItem(Direction.Up, 'coal');
+        object.acceptItem(object.entity.direction, 'coal');
 
         return;
     }
