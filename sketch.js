@@ -1,13 +1,13 @@
 let debug = false;
-let gridSize = 20;
+let gridSize = 50;
 let zoom = {
-    min: 1,
-    max: 5,
-    step: 0.5,
-    scale: 2.5,
+    min: 0.4,
+    max: 2,
+    step: 0.2,
+    scale: 1,
 };
 let scrollStep = 5;
-let mapSize = new p5.Vector(1000, 1000);
+let mapSize = new p5.Vector(2500, 2500);
 let canvasSize = new p5.Vector(500, 500);
 let origin = new p5.Vector(0, 0);
 
@@ -19,6 +19,14 @@ let globalDirection = Direction.Up;
 let touchZoom = [];
 let touchMovement = [];
 let wasTouchZoomed = false
+let oresSpriteSheet;
+let oresSpriteData;
+let beltAnimationProgress = 30;
+
+function preload() {
+    oresSpriteData = loadJSON('sprites/ores.json');
+    oresSpriteSheet = loadImage('sprites/ores.png');
+}
 
 function setup() {
     canvasSize.x = displayWidth
@@ -31,6 +39,7 @@ function setup() {
 }
 
 function draw() {
+    noSmooth();
     push();
     move();
     noStroke();
@@ -64,14 +73,14 @@ function drawMouseSquare(cell) {
 
     strokeWeight(1);
     stroke(51);
+    let size = getMouseCellSize()
+    getMouseCellFill(cell, size)
 
-    if (outOfBounds() || !objectMap.cellIsEmpty(cell)) {
-        fill(200, 0, 0, 100);
-    } else {
-        fill(200, 200, 200, 200);
-    }
-
-    rect(cell.x * gridSize, cell.y * gridSize, gridSize, gridSize);
+    // if (cellIsOutOfBounds(cell) || !objectMap.cellIsEmpty(cell)) {
+    //     fill(200, 0, 0, 100);
+    // } else {
+    //     fill(200, 200, 200, 200);
+    // }
 
     if (inHand !== null) {
         inHand.position(cell);
@@ -84,12 +93,70 @@ function drawMouseSquare(cell) {
         pop();
     }
 
+    rect(cell.x * gridSize, cell.y * gridSize, size.x * gridSize, size.y * gridSize);
+
     if (debug) {
         fill(255);
         text(cell.x + ":" + cell.y, cell.x * gridSize, cell.y * gridSize);
     }
 
     pop();
+}
+
+/**
+ * @return {p5.Vector}
+ */
+function getMouseCellSize() {
+    if (inHand !== null) {
+        return inHand.entity.size;
+    }
+
+    return new p5.Vector(1, 1);
+}
+
+/**
+ * @param {p5.Vector} cell
+ * @param {p5.Vector} size
+ * @return {void}
+ */
+function getMouseCellFill(cell, size) {
+    fill(200, 200, 200, 200);
+
+    iterateOverCells(cell, size, (callbackCell, loops) => {
+        if (cellIsOutOfBounds(callbackCell) || !objectMap.cellIsEmpty(callbackCell)) {
+            return fill(200, 0, 0, 100);
+        }
+    });
+}
+
+/**
+ * @callback iteratedCell
+ * @param {p5.Vector} cell
+ * @param {number} loops
+ * @returns {*}
+ */
+
+/**
+ * @param {p5.Vector} cell
+ * @param {p5.Vector} size
+ * @param {iteratedCell} callback
+ * @returns {*}
+ */
+function iterateOverCells(cell, size, callback) {
+    let callbackResponse;
+    let loops = 0;
+
+    for (let i = 0; i < size.x; i++) {
+        for (let j = 0; j < size.y; j++) {
+            callbackResponse = callback(new p5.Vector(cell.x + i, cell.y + j), loops);
+
+            if (callbackResponse !== undefined) {
+                return callbackResponse;
+            }
+
+            loops++;
+        }
+    }
 }
 
 function minX() {
@@ -171,51 +238,73 @@ function mouseCell() {
     );
 }
 
-function outOfBounds() {
-    return (
-        mouseX + origin.x <= 0 ||
-        mouseX + origin.x >= mapSize.x * zoom.scale ||
-        mouseY + origin.y <= 0 ||
-        mouseY + origin.y >= mapSize.y * zoom.scale
-    );
+/**
+ * @param {p5.Vector} cell
+ * @return {boolean}
+ */
+function cellIsOutOfBounds(cell) {
+    return cell.x < 0 ||
+        cell.x >= mapSize.x / gridSize ||
+        cell.y < 0 ||
+        cell.y >= mapSize.y / gridSize;
 }
 
 function click() {
-    if (outOfBounds()) {
+    let cell = mouseCell();
+    let size = getMouseCellSize();
+
+    let anyCellIsOutOfBounds = iterateOverCells(cell, size, (callbackCell, loops) => {
+        if (cellIsOutOfBounds(callbackCell)) {
+            return true;
+        }
+    });
+
+    if (anyCellIsOutOfBounds) {
         return;
     }
 
-    let cell = mouseCell();
-    let object = objectMap.getCell(cell);
-
     if (inHand !== null) {
-        if (objectMap.cellIsEmpty(cell)) {
-            if (inHand.entity instanceof Belt) {
-                createBelt();
-            } else if (inHand.entity instanceof Extractor) {
-                createExtractor();
+        let anyCellIsNotEmpty = iterateOverCells(cell, size, (callbackCell, loops) => {
+            if (!objectMap.cellIsEmpty(callbackCell)) {
+                return true;
             }
+        });
+
+        if (anyCellIsNotEmpty) {
+            return;
+        }
+
+        if (inHand.entity instanceof Belt) {
+            createBelt();
+        } else if (inHand.entity instanceof Extractor) {
+            createExtractor();
         }
 
         return;
     }
+
+    let object = objectMap.getCell(cell);
 
     if (object === null || object.isEmpty()) {
         return;
     }
 
     if (object.entity instanceof Belt) {
-        object.acceptItem(object.entity.direction, 'coal');
+        object.acceptItem(object.entity.direction, new Item());
 
         return;
     }
 
-    objectMap.deleteObjectInCell(cell);
+    iterateOverCells(object.entity.originCell, object.entity.size, (callbackCell, loops) => {
+        objectMap.deleteObjectInCell(callbackCell);
+    });
+
+    // objectMap.deleteObjectInCell(cell);
 }
 
 function createBelt() {
     handCell = inHand.position();
-    belt = new Belt(inHand.entity.direction);
+    belt = new Belt(handCell, inHand.entity.direction);
     cell = new Cell(handCell, belt);
     objectMap.setCell(cell);
 
@@ -228,15 +317,20 @@ function createBelt() {
 
 function createExtractor() {
     handCell = inHand.position();
-    extractor = new Extractor(inHand.entity.direction);
-    cell = new Cell(handCell, extractor);
-    objectMap.setCell(cell);
+    extractor = new Extractor(handCell, inHand.entity.direction);
 
-    translate(-origin.x, -origin.y);
-    scale(zoom.scale);
-    cell.draw();
+    iterateOverCells(handCell, extractor.size, (callbackCell, loops) => {
+        cell = new Cell(callbackCell, extractor);
+        objectMap.setCell(cell);
 
-    objectMap.extractors.push(cell);
+        if (loops === 0) {
+            translate(-origin.x, -origin.y);
+            scale(zoom.scale);
+            cell.draw();
+
+            objectMap.extractors.push(cell);
+        }
+    });
 }
 
 function wheel(event) {
@@ -305,14 +399,14 @@ function keyPressed(event) {
         cell = mouseCell();
 
         dump(globalDirection);
-        inHand = new Cell(cell, new Belt(globalDirection, true));
+        inHand = new Cell(cell, new Belt(cell, globalDirection, true));
     }
 
     if (keyCode === 77) {
         //m
         cell = mouseCell();
 
-        inHand = new Cell(cell, new Extractor(globalDirection, true));
+        inHand = new Cell(cell, new Extractor(cell, globalDirection, true));
     }
 
     if (keyCode === 70) {

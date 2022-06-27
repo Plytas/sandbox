@@ -1,9 +1,12 @@
 class Entity {
     /**
+     * @param {p5.Vector} originCell
      * @param {Direction} direction
      * @param {boolean} isGhost
      */
-    constructor(direction = Direction.Up, isGhost = false) {
+    constructor(originCell, direction = Direction.Up, isGhost = false) {
+        this.originCell = originCell;
+        this.size = new p5.Vector(1, 1);
         this.direction = direction;
         this.isGhost = isGhost;
     }
@@ -23,6 +26,13 @@ class Entity {
     }
 
     /**
+     * @param {p5.Vector} cell
+     */
+    drawItem(cell) {
+
+    }
+
+    /**
      * @param {Cell} cell
      */
     work(cell) {
@@ -31,7 +41,7 @@ class Entity {
 
     /**
      * @param {Direction} direction
-     * @param {*} item
+     * @param {Item} item
      * @returns {boolean}
      */
     acceptsItem(direction, item) {
@@ -48,7 +58,7 @@ class Entity {
 
     /**
      * @param {Direction} direction
-     * @param {*} item
+     * @param {Item} item
      * @return {boolean}
      */
     acceptItem(direction, item) {

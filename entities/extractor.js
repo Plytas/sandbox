@@ -1,10 +1,12 @@
 class Extractor extends Entity {
     /**
+     * @param {p5.Vector} originCell
      * @param {Direction} direction
      * @param {boolean} isGhost
      */
-    constructor(direction = Direction.Up, isGhost = false) {
-        super(direction, isGhost);
+    constructor(originCell, direction = Direction.Up, isGhost = false) {
+        super(originCell, direction, isGhost);
+        this.size = new p5.Vector(2, 2);
         this.speed = 0.5;
         this.craftingTime = 120;
         this.count = 0;
@@ -37,8 +39,8 @@ class Extractor extends Entity {
             fill(0);
         }
 
-        rect(cell.x * gridSize + 2, cell.y * gridSize + 2, gridSize - 4, gridSize - 4);
+        rect(cell.x * gridSize + 2, cell.y * gridSize + 2, (this.size.x * gridSize) - 4, (this.size.y * gridSize) - 4);
         fill(255);
-        rect(cell.x * gridSize + 2, cell.y * gridSize + 2, ((gridSize - 4) * this.steps) / this.craftingTime, 2);
+        rect(cell.x * gridSize + 2, cell.y * gridSize + 2, ((this.size.x * gridSize - 4) * this.steps) / this.craftingTime, 2);
     }
 }

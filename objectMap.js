@@ -58,7 +58,7 @@ class ObjectMap {
      */
     deleteObjectInCell(cell) {
         if (this.cellIsEmpty(cell)) {
-
+            return;
         }
 
         this.cells[cell.x][cell.y].destroy();
@@ -73,9 +73,9 @@ class ObjectMap {
         this.extractors
             .slice()
             .reverse()
-            .forEach(function (cell, index, list) {
+            .forEach((cell, index, list) => {
                 if (cell.isEmpty()) {
-                    list.splice(list.length - 1 - index, 1);
+                    this.extractors.splice(list.length - 1 - index, 1);
                     return;
                 }
 
@@ -85,17 +85,36 @@ class ObjectMap {
     }
 
     processBelts() {
+        if (beltAnimationProgress > 60) {
+            beltAnimationProgress = 0;
+        }
+
         this.belts
             .slice()
             .reverse()
-            .forEach(function (cell, index, list) {
+            .forEach((cell, index, list) => {
                 if (cell.isEmpty()) {
-                    list.splice(list.length - 1 - index, 1);
+                    this.belts.splice(list.length - 1 - index, 1);
                     return;
                 }
 
-                cell.work();
                 cell.draw();
             });
+
+        this.belts
+            .slice()
+            .reverse()
+            .forEach(cell => {
+                cell.drawItem();
+            });
+
+        this.belts
+            .slice()
+            .reverse()
+            .forEach(cell => {
+                cell.work();
+            });
+
+        beltAnimationProgress += 1;
     }
 }

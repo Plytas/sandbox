@@ -1,6 +1,6 @@
 class Cell {
     /**
-     * @param {Cell} cell
+     * @param {p5.Vector} cell
      * @param {Entity|null} entity
      */
     constructor(cell, entity = null) {
@@ -42,6 +42,14 @@ class Cell {
         this.entity.draw(new p5.Vector(this.x, this.y));
     }
 
+    drawItem() {
+        if (this.isEmpty()) {
+            return;
+        }
+
+        this.entity.drawItem(new p5.Vector(this.x, this.y));
+    }
+
     work() {
         if (this.isEmpty()) {
             return;
@@ -63,10 +71,10 @@ class Cell {
 
     /**
      * @param {Direction} direction
-     * @param {*} item
+     * @param {Item} item
      * @returns {boolean}
      */
-    acceptsItem(direction, item = null) {
+    acceptsItem(direction, item) {
         if (this.isEmpty()) {
             return false;
         }
@@ -89,7 +97,7 @@ class Cell {
     /**
      *
      * @param {Direction} direction
-     * @param {*} item
+     * @param {Item} item
      * @return {boolean}
      */
     acceptItem(direction, item) {
