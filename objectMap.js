@@ -79,8 +79,21 @@ class ObjectMap {
                     return;
                 }
 
-                cell.work();
                 cell.draw();
+            });
+
+        this.extractors
+            .slice()
+            .reverse()
+            .forEach((cell) => {
+                cell.drawItem();
+            });
+
+        this.extractors
+            .slice()
+            .reverse()
+            .forEach((cell) => {
+                cell.work();
             });
     }
 

@@ -10,6 +10,7 @@ let scrollStep = 5;
 let mapSize = new p5.Vector(2500, 2500);
 let canvasSize = new p5.Vector(500, 500);
 let origin = new p5.Vector(0, 0);
+let mouse = new Mouse();
 
 let objectMap = new ObjectMap();
 
@@ -39,6 +40,8 @@ function setup() {
 }
 
 function draw() {
+    mouse.precalculateCell();
+
     noSmooth();
     push();
     move();
@@ -50,7 +53,7 @@ function draw() {
 
     objectMap.processCells();
 
-    drawMouseSquare(mouseCell());
+    mouse.draw();
 
     pop();
 
@@ -63,70 +66,6 @@ function draw() {
         rect(canvasSize.x / 2, canvasSize.y / 2, 3, 3);
         rectMode(CORNER);
     }
-}
-
-/**
- * @param {p5.Vector} cell
- */
-function drawMouseSquare(cell) {
-    push();
-
-    strokeWeight(1);
-    stroke(51);
-    let size = getMouseCellSize()
-    getMouseCellFill(cell, size)
-
-    // if (cellIsOutOfBounds(cell) || !objectMap.cellIsEmpty(cell)) {
-    //     fill(200, 0, 0, 100);
-    // } else {
-    //     fill(200, 200, 200, 200);
-    // }
-
-    if (inHand !== null) {
-        inHand.position(cell);
-
-        push();
-        if (!objectMap.cellIsEmpty(cell)) {
-            translate(2, 2);
-        }
-        inHand.draw();
-        pop();
-    }
-
-    rect(cell.x * gridSize, cell.y * gridSize, size.x * gridSize, size.y * gridSize);
-
-    if (debug) {
-        fill(255);
-        text(cell.x + ":" + cell.y, cell.x * gridSize, cell.y * gridSize);
-    }
-
-    pop();
-}
-
-/**
- * @return {p5.Vector}
- */
-function getMouseCellSize() {
-    if (inHand !== null) {
-        return inHand.entity.size;
-    }
-
-    return new p5.Vector(1, 1);
-}
-
-/**
- * @param {p5.Vector} cell
- * @param {p5.Vector} size
- * @return {void}
- */
-function getMouseCellFill(cell, size) {
-    fill(200, 200, 200, 200);
-
-    iterateOverCells(cell, size, (callbackCell, loops) => {
-        if (cellIsOutOfBounds(callbackCell) || !objectMap.cellIsEmpty(callbackCell)) {
-            return fill(200, 0, 0, 100);
-        }
-    });
 }
 
 /**
@@ -229,16 +168,6 @@ function move() {
 }
 
 /**
- * @returns {p5.Vector}
- */
-function mouseCell() {
-    return new p5.Vector(
-        Math.floor((mouseX + origin.x) / (gridSize * zoom.scale)),
-        Math.floor((mouseY + origin.y) / (gridSize * zoom.scale)),
-    );
-}
-
-/**
  * @param {p5.Vector} cell
  * @return {boolean}
  */
@@ -250,8 +179,8 @@ function cellIsOutOfBounds(cell) {
 }
 
 function click() {
-    let cell = mouseCell();
-    let size = getMouseCellSize();
+    let cell = mouse.cell;
+    let size = mouse.cellSize();
 
     let anyCellIsOutOfBounds = iterateOverCells(cell, size, (callbackCell, loops) => {
         if (cellIsOutOfBounds(callbackCell)) {
@@ -382,8 +311,6 @@ function keyPressed(event) {
 
     if (keyCode === 82) {
         //r
-        cell = mouseCell();
-
         if (inHand !== null) {
             inHand.rotate(!event.shiftKey);
             globalDirection = inHand.entity.direction;
@@ -391,22 +318,18 @@ function keyPressed(event) {
             return
         }
 
-        return objectMap.rotateObjectInCell(cell, !event.shiftKey);
+        return objectMap.rotateObjectInCell(mouse.cell, !event.shiftKey);
     }
 
     if (keyCode === 66) {
         //b
-        cell = mouseCell();
-
         dump(globalDirection);
-        inHand = new Cell(cell, new Belt(cell, globalDirection, true));
+        inHand = new Cell(mouse.cell, new Belt(mouse.cell, globalDirection, true));
     }
 
     if (keyCode === 77) {
         //m
-        cell = mouseCell();
-
-        inHand = new Cell(cell, new Extractor(cell, globalDirection, true));
+        inHand = new Cell(mouse.cell, new Extractor(mouse.cell, globalDirection, true));
     }
 
     if (keyCode === 70) {
@@ -418,17 +341,14 @@ function keyPressed(event) {
 
     if (keyCode === 81) {
         //q
-
-        cell = mouseCell();
-
         if (inHand !== null) {
             inHand = null;
-        } else if (!objectMap.cellIsEmpty(cell)) {
-            cellObject = objectMap.getCell(cell);
+        } else if (!objectMap.cellIsEmpty(mouse.cell)) {
+            cellObject = objectMap.getCell(mouse.cell);
 
             globalDirection = cellObject.entity.direction;
             inHand = new Cell(
-                cell,
+                mouse.cell,
                 new cellObject.entity.constructor(globalDirection, true)
             );
         }

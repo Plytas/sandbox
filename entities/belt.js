@@ -101,7 +101,7 @@ class Belt extends Entity {
     }
 
     /**
-     * @param {Cell} cell
+     * @param {p5.Vector} cell
      */
     drawItem(cell) {
         push();
