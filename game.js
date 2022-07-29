@@ -1,4 +1,4 @@
-import Cell from "./common/cell.js/index.js";
+import Cell from "./common/cell.js";
 import { config } from "./config.js";
 import Belt from "./entities/belt.js";
 import Extractor from "./entities/extractor.js";
