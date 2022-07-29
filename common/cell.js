@@ -1,4 +1,8 @@
-class Cell {
+import Entity from "../entities/entity.js";
+import Item from "../items/item.js";
+import Direction from "./direction.js";
+
+export default class Cell {
     /**
      * @param {p5.Vector} cell
      * @param {Entity|null} entity

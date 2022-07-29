@@ -1,4 +1,7 @@
-class ObjectMap {
+import Cell from './common/cell.js';
+import { config } from './config.js';
+
+export default class ObjectMap {
     constructor() {
         /** @type {Cell[][]} */
         this.cells = [];
@@ -98,8 +101,8 @@ class ObjectMap {
     }
 
     processBelts() {
-        if (beltAnimationProgress > 60) {
-            beltAnimationProgress = 0;
+        if (config.beltAnimationProgress > 60) {
+            config.beltAnimationProgress = 0;
         }
 
         this.belts
@@ -128,6 +131,6 @@ class ObjectMap {
                 cell.work();
             });
 
-        beltAnimationProgress += 1;
+        config.beltAnimationProgress += 1;
     }
 }

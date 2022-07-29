@@ -1,4 +1,6 @@
-class Input {
+import Direction from "./direction.js";
+
+export default class Input {
     /**
      * @param {p5.Vector} cell
      * @param {Direction} direction

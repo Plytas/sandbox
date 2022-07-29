@@ -1,4 +1,9 @@
-class Belt extends Entity {
+import Direction from "../common/direction.js";
+import { config } from "../config.js";
+import Item from "../items/item.js";
+import Entity from "./entity.js";
+
+export default class Belt extends Entity {
     /**
      * @param {p5.Vector} originCell
      * @param {Direction} direction
@@ -18,7 +23,7 @@ class Belt extends Entity {
      */
     draw(cell) {
         push();
-        translate(cell.x * gridSize + gridSize / 2, cell.y * gridSize + gridSize / 2);
+        translate(cell.x * config.gridSize + config.gridSize / 2, cell.y * config.gridSize + config.gridSize / 2);
 
         rotate(this.direction.rotation());
 
@@ -29,7 +34,7 @@ class Belt extends Entity {
         }
 
         rectMode(CENTER);
-        rect(0, 0, gridSize, gridSize);
+        rect(0, 0, config.gridSize, config.gridSize);
         drawingContext.clip();
 
 
@@ -43,36 +48,36 @@ class Belt extends Entity {
         }
 
 
-        // translate(0, -((beltAnimationProgress - gridSize) / 2))
-        translate(0, -(beltAnimationProgress * gridSize / 60));
-        // rect(0, 0, gridSize / 2, gridSize / 10);
-        triangle((-gridSize / 8), (gridSize / 8), 0, (-gridSize / 8), (gridSize / 8), (gridSize / 8));
+        // translate(0, -((config.beltAnimationProgress - config.gridSize) / 2))
+        translate(0, -(config.beltAnimationProgress * config.gridSize / 60));
+        // rect(0, 0, config.gridSize / 2, config.gridSize / 10);
+        triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
 
-        // translate(0, -gridSize / 2);
-        // // rect(0, 0, gridSize / 2, gridSize / 10);
-        // triangle((-gridSize / 8), (gridSize / 8), 0, (-gridSize / 8), (gridSize / 8), (gridSize / 8));
+        // translate(0, -config.gridSize / 2);
+        // // rect(0, 0, config.gridSize / 2, config.gridSize / 10);
+        // triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
 
-        translate(0, -gridSize);
-        // rect(0, 0, gridSize / 2, gridSize / 10);
-        triangle((-gridSize / 8), (gridSize / 8), 0, (-gridSize / 8), (gridSize / 8), (gridSize / 8));
+        translate(0, -config.gridSize);
+        // rect(0, 0, config.gridSize / 2, config.gridSize / 10);
+        triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
 
-        translate(0, 2 * gridSize);
-        // rect(0, 0, gridSize / 2, gridSize / 10);
-        triangle((-gridSize / 8), (gridSize / 8), 0, (-gridSize / 8), (gridSize / 8), (gridSize / 8));
+        translate(0, 2 * config.gridSize);
+        // rect(0, 0, config.gridSize / 2, config.gridSize / 10);
+        triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
 
-        // translate(0, -gridSize / 2);
-        // // rect(0, 0, gridSize / 2, gridSize / 10);
-        // triangle((-gridSize / 8), (gridSize / 8), 0, (-gridSize / 8), (gridSize / 8), (gridSize / 8));
+        // translate(0, -config.gridSize / 2);
+        // // rect(0, 0, config.gridSize / 2, config.gridSize / 10);
+        // triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
 
 
-        // if (beltAnimationProgress <= 50) {
-        //     translate(0, -(50 + (beltAnimationProgress - gridSize) / 2))
+        // if (config.beltAnimationProgress <= 50) {
+        //     translate(0, -(50 + (config.beltAnimationProgress - config.gridSize) / 2))
         // } else {
-        //     translate(0, -(-50 + (beltAnimationProgress - gridSize) / 2))
+        //     translate(0, -(-50 + (config.beltAnimationProgress - config.gridSize) / 2))
         // }
         //
-        // rect(0, 0, gridSize / 2, gridSize / 10);
-        // triangle((-gridSize / 8), (gridSize / 8), 0, (-gridSize / 8), (gridSize / 8), (gridSize / 8));
+        // rect(0, 0, config.gridSize / 2, config.gridSize / 10);
+        // triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
 
         pop()
 
@@ -80,20 +85,20 @@ class Belt extends Entity {
         //     // fill(53, 77, 117);
         //     // rectMode(CENTER);
         //
-        //     if (this.progress < 50 + (this.item.width / 2) / (gridSize / 100)) {
+        //     if (this.progress < 50 + (this.item.width / 2) / (config.gridSize / 100)) {
         //         if (this.fromDirection.value === Direction.Left.value) {
-        //             this.item.draw(new p5.Vector(-(gridSize / 2 - (gridSize * this.progress / 100)) - this.item.width / 2, 0));
-        //             // rect(-(gridSize / 2 - (gridSize * this.progress / 100)) - 2, 0, 4, 4);
+        //             this.item.draw(new p5.Vector(-(config.gridSize / 2 - (config.gridSize * this.progress / 100)) - this.item.width / 2, 0));
+        //             // rect(-(config.gridSize / 2 - (config.gridSize * this.progress / 100)) - 2, 0, 4, 4);
         //         } else if (this.fromDirection.value === Direction.Right.value) {
-        //             this.item.draw(new p5.Vector((gridSize / 2 - (gridSize * this.progress / 100)) + this.item.width / 2, 0));
-        //             // rect((gridSize / 2 - (gridSize * this.progress / 100)) + 2, 0, 4, 4);
+        //             this.item.draw(new p5.Vector((config.gridSize / 2 - (config.gridSize * this.progress / 100)) + this.item.width / 2, 0));
+        //             // rect((config.gridSize / 2 - (config.gridSize * this.progress / 100)) + 2, 0, 4, 4);
         //         } else {
-        //             this.item.draw(new p5.Vector(0, gridSize / 2 - (gridSize * this.progress / 100) + this.item.height / 2));
-        //             // rect(0, gridSize / 2 - (gridSize * this.progress / 100) + 2, 4, 4);
+        //             this.item.draw(new p5.Vector(0, config.gridSize / 2 - (config.gridSize * this.progress / 100) + this.item.height / 2));
+        //             // rect(0, config.gridSize / 2 - (config.gridSize * this.progress / 100) + 2, 4, 4);
         //         }
         //     } else {
-        //         this.item.draw(new p5.Vector(0, gridSize / 2 - (gridSize * this.progress / 100) + this.item.height / 2));
-        //         // rect(0, gridSize / 2 - (gridSize * this.progress / 100) + 2, 4, 4);
+        //         this.item.draw(new p5.Vector(0, config.gridSize / 2 - (config.gridSize * this.progress / 100) + this.item.height / 2));
+        //         // rect(0, config.gridSize / 2 - (config.gridSize * this.progress / 100) + 2, 4, 4);
         //     }
         // }
 
@@ -105,40 +110,40 @@ class Belt extends Entity {
      */
     drawItem(cell) {
         push();
-        translate(cell.x * gridSize + gridSize / 2, cell.y * gridSize + gridSize / 2);
+        translate(cell.x * config.gridSize + config.gridSize / 2, cell.y * config.gridSize + config.gridSize / 2);
 
         if (!this.isGhost && this.item !== null) {
             // fill(53, 77, 117);
             // rectMode(CENTER);
 
-            if (this.progress < 30 + (this.item.width / 2) / (gridSize / 60)) {
+            if (this.progress < 30 + (this.item.width / 2) / (config.gridSize / 60)) {
                 if (this.fromDirection.value === Direction.Left.value) {
                     rotate(this.direction.rotation());
-                    translate(-(gridSize / 2 - (gridSize * this.progress / 60)) - this.item.width / 2, 0)
+                    translate(-(config.gridSize / 2 - (config.gridSize * this.progress / 60)) - this.item.width / 2, 0)
                     rotate(-this.direction.rotation());
 
                     this.item.draw(new p5.Vector(0, 0));
-                    // rect(-(gridSize / 2 - (gridSize * this.progress / 60)) - 2, 0, 4, 4);
+                    // rect(-(config.gridSize / 2 - (config.gridSize * this.progress / 60)) - 2, 0, 4, 4);
                 } else if (this.fromDirection.value === Direction.Right.value) {
                     rotate(this.direction.rotation());
-                    translate((gridSize / 2 - (gridSize * this.progress / 60)) + this.item.width / 2, 0)
+                    translate((config.gridSize / 2 - (config.gridSize * this.progress / 60)) + this.item.width / 2, 0)
                     rotate(-this.direction.rotation());
 
                     this.item.draw(new p5.Vector(0, 0));
-                    // rect((gridSize / 2 - (gridSize * this.progress / 60)) + 2, 0, 4, 4);
+                    // rect((config.gridSize / 2 - (config.gridSize * this.progress / 60)) + 2, 0, 4, 4);
                 } else {
                     rotate(this.direction.rotation());
-                    translate(0, gridSize / 2 - (gridSize * this.progress / 60) + this.item.height / 2)
+                    translate(0, config.gridSize / 2 - (config.gridSize * this.progress / 60) + this.item.height / 2)
                     rotate(-this.direction.rotation());
                     this.item.draw(new p5.Vector(0, 0));
-                    // rect(0, gridSize / 2 - (gridSize * this.progress / 60) + 2, 4, 4);
+                    // rect(0, config.gridSize / 2 - (config.gridSize * this.progress / 60) + 2, 4, 4);
                 }
             } else {
                 rotate(this.direction.rotation());
-                translate(0, gridSize / 2 - (gridSize * this.progress / 60) + this.item.height / 2)
+                translate(0, config.gridSize / 2 - (config.gridSize * this.progress / 60) + this.item.height / 2)
                 rotate(-this.direction.rotation());
                 this.item.draw(new p5.Vector(0, 0));
-                // rect(0, gridSize / 2 - (gridSize * this.progress / 60) + 2, 4, 4);
+                // rect(0, config.gridSize / 2 - (config.gridSize * this.progress / 60) + 2, 4, 4);
             }
         }
         pop();
@@ -161,7 +166,7 @@ class Belt extends Entity {
 
         if (this.progress === 60) {
             let nextCell = cell.nextCell()
-            let object = objectMap.getCell(nextCell)
+            let object = config.objectMap.getCell(nextCell)
 
             if (object !== null && object.acceptItem(this.direction, this.item)) {
                 this.reset = true;

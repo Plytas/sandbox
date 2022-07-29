@@ -1,4 +1,7 @@
-class Entity {
+import Direction from '../common/direction.js';
+import Item from '../items/item.js';
+
+export default class Entity {
     /**
      * @param {p5.Vector} originCell
      * @param {Direction} direction

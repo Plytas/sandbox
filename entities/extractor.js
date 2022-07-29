@@ -1,4 +1,12 @@
-class Extractor extends Entity {
+import Cell from "../common/cell.js";
+import Direction from "../common/direction.js";
+import Output from "../common/output.js";
+import { config } from "../config.js";
+import Item from "../items/item.js";
+import { dump } from "../sketch.js";
+import Entity from "./entity.js";
+
+export default class Extractor extends Entity {
     /**
      * @param {p5.Vector} originCell
      * @param {Direction} direction
@@ -47,7 +55,7 @@ class Extractor extends Entity {
     work(cell) {
         if (this.steps >= this.craftingTime) {
             let nextCell = this.output.cell.nextCell(this.output.direction);
-            let object = objectMap.getCell(nextCell);
+            let object = config.objectMap.getCell(nextCell);
 
             if (object !== null && object.acceptItem(this.direction, this.item)) {
                 this.steps = 0;
@@ -70,9 +78,9 @@ class Extractor extends Entity {
             fill(0);
         }
 
-        rect(cell.x * gridSize + 2, cell.y * gridSize + 2, (this.size.x * gridSize) - 4, (this.size.y * gridSize) - 4);
+        rect(cell.x * config.gridSize + 2, cell.y * config.gridSize + 2, (this.size.x * config.gridSize) - 4, (this.size.y * config.gridSize) - 4);
         fill(255);
-        rect(cell.x * gridSize + 2, cell.y * gridSize + 2, ((this.size.x * gridSize - 4) * this.steps) / this.craftingTime, 2);
+        rect(cell.x * config.gridSize + 2, cell.y * config.gridSize + 2, ((this.size.x * config.gridSize - 4) * this.steps) / this.craftingTime, 2);
     }
 
     /**
@@ -86,9 +94,9 @@ class Extractor extends Entity {
         push();
         cell = this.output.cell
 
-        translate(cell.x * gridSize + gridSize / 2, cell.y * gridSize + gridSize / 2);
+        translate(cell.x * config.gridSize + config.gridSize / 2, cell.y * config.gridSize + config.gridSize / 2);
         rotate(this.output.direction.rotation());
-        translate(0, gridSize / 2 - (gridSize * this.steps / this.craftingTime) + this.item.height / 2)
+        translate(0, config.gridSize / 2 - (config.gridSize * this.steps / this.craftingTime) + this.item.height / 2)
         rotate(-this.output.direction.rotation());
         this.item.draw(new p5.Vector(0, 0));
 

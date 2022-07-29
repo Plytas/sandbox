@@ -1,12 +1,14 @@
-class Item {
+import { config } from "../config.js";
+
+export default class Item {
     constructor() {
-        let coalSpriteData = oresSpriteData.coal;
-        let pos = coalSpriteData[Math.floor(Math.random()*coalSpriteData.length)].position;
-        this.image = oresSpriteSheet.get(pos.x, pos.y, pos.w, pos.h);
+        let coalSpriteData = config.oresSpriteData.coal;
+        let pos = coalSpriteData[Math.floor(Math.random() * coalSpriteData.length)].position;
+        this.image = config.oresSpriteSheet.get(pos.x, pos.y, pos.w, pos.h);
 
         // this.image = image;
-        this.width = gridSize * 0.6;
-        this.height = gridSize * 0.6;
+        this.width = config.gridSize * 0.6;
+        this.height = config.gridSize * 0.6;
     }
 
     /**

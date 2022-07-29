@@ -1,4 +1,7 @@
-class Output {
+import Cell from "./cell.js";
+import Direction from "./direction.js";
+
+export default class Output {
     /**
      * @param {p5.Vector} cell
      * @param {Direction} direction

@@ -1,48 +1,48 @@
 {
-  "coal" : [
+  "coal": [
     {
-      "name" : "coal-00",
-      "position" : {
-        "x" : 0,
-        "y" : 66,
-        "w" : 15,
-        "h" : 15
+      "name": "coal-00",
+      "position": {
+        "x": 0,
+        "y": 66,
+        "w": 15,
+        "h": 15
       }
     },
     {
-      "name" : "coal-01",
-      "position" : {
-        "x" : 16,
-        "y" : 66,
-        "w" : 15,
-        "h" : 15
+      "name": "coal-01",
+      "position": {
+        "x": 16,
+        "y": 66,
+        "w": 15,
+        "h": 15
       }
     },
     {
-      "name" : "coal-02",
-      "position" : {
-        "x" : 32,
-        "y" : 66,
-        "w" : 15,
-        "h" : 15
+      "name": "coal-02",
+      "position": {
+        "x": 32,
+        "y": 66,
+        "w": 15,
+        "h": 15
       }
     },
     {
-      "name" : "coal-03",
-      "position" : {
-        "x" : 48,
-        "y" : 66,
-        "w" : 15,
-        "h" : 15
+      "name": "coal-03",
+      "position": {
+        "x": 48,
+        "y": 66,
+        "w": 15,
+        "h": 15
       }
     },
     {
-      "name" : "coal-04",
-      "position" : {
-        "x" : 64,
-        "y" : 66,
-        "w" : 15,
-        "h" : 15
+      "name": "coal-04",
+      "position": {
+        "x": 64,
+        "y": 66,
+        "w": 15,
+        "h": 15
       }
     }
   ]

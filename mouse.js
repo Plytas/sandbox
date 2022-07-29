@@ -1,4 +1,7 @@
-class Mouse {
+import { config } from "./config.js";
+import * as game from "./game.js";
+
+export default class Mouse {
     draw() {
         push();
         strokeWeight(1);
@@ -7,22 +10,22 @@ class Mouse {
         let size = this.cellSize()
         this.cellFill(this.cell, size)
 
-        if (inHand !== null) {
-            inHand.position(this.cell);
+        if (config.inHand !== null) {
+            config.inHand.position(this.cell);
 
             push();
-            if (!objectMap.cellIsEmpty(this.cell)) {
+            if (!config.objectMap.cellIsEmpty(this.cell)) {
                 translate(2, 2);
             }
-            inHand.draw();
+            config.inHand.draw();
             pop();
         }
 
-        rect(this.cell.x * gridSize, this.cell.y * gridSize, size.x * gridSize, size.y * gridSize);
+        rect(this.cell.x * config.gridSize, this.cell.y * config.gridSize, size.x * config.gridSize, size.y * config.gridSize);
 
-        if (debug) {
+        if (config.debug) {
             fill(255);
-            text(this.cell.x + ":" + this.cell.y, this.cell.x * gridSize, this.cell.y * gridSize);
+            text(this.cell.x + ":" + this.cell.y, this.cell.x * config.gridSize, this.cell.y * config.gridSize);
         }
 
         pop();
@@ -31,8 +34,8 @@ class Mouse {
     precalculateCell() {
         /** @type {p5.Vector} */
         this.cell = new p5.Vector(
-            Math.floor((mouseX + origin.x) / (gridSize * zoom.scale)),
-            Math.floor((mouseY + origin.y) / (gridSize * zoom.scale)),
+            Math.floor((mouseX + config.origin.x) / (config.gridSize * config.zoom.scale)),
+            Math.floor((mouseY + config.origin.y) / (config.gridSize * config.zoom.scale)),
         );
     }
 
@@ -40,8 +43,8 @@ class Mouse {
      * @return {p5.Vector}
      */
     cellSize() {
-        if (inHand !== null) {
-            return inHand.entity.size;
+        if (config.inHand !== null) {
+            return config.inHand.entity.size;
         }
 
         return new p5.Vector(1, 1);
@@ -55,8 +58,8 @@ class Mouse {
     cellFill(cell, size) {
         fill(200, 200, 200, 200);
 
-        iterateOverCells(cell, size, (callbackCell) => {
-            if (cellIsOutOfBounds(callbackCell) || !objectMap.cellIsEmpty(callbackCell)) {
+        game.iterateOverCells(cell, size, (callbackCell) => {
+            if (game.cellIsOutOfBounds(callbackCell) || !config.objectMap.cellIsEmpty(callbackCell)) {
                 return fill(200, 0, 0, 100);
             }
         });

@@ -1,4 +1,4 @@
-class Direction {
+export default class Direction {
     /**
      * @param {number} directionValue
      */
