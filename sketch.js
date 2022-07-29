@@ -1,9 +1,9 @@
-import Cell from "./common/cell.js";
 import { config } from "./config.js";
 import Belt from "./entities/belt.js";
 import Extractor from "./entities/extractor.js";
 import * as game from "./game.js";
 import Item from "./items/item.js";
+import Cell from "./common/cell.js";
 
 window.preload = function() {
     config.oresSpriteData = loadJSON('sprites/ores.json');
@@ -18,8 +18,6 @@ window.setup = function() {
     canvas.touchMoved(touchMove);
     canvas.mousePressed(click);
     canvas.mouseWheel(wheel);
-
-    push()
 }
 
 window.draw = function() {
