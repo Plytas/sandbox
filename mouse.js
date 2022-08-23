@@ -2,6 +2,14 @@ import { config } from "./config.js";
 import * as game from "./game.js";
 
 export default class Mouse {
+    precalculateCell() {
+        /** @type {p5.Vector} */
+        this.cell = new p5.Vector(
+            Math.floor((mouseX + config.origin.x) / (config.gridSize * config.zoom.scale)),
+            Math.floor((mouseY + config.origin.y) / (config.gridSize * config.zoom.scale)),
+        );
+    }
+
     draw() {
         push();
         strokeWeight(1);
@@ -19,6 +27,9 @@ export default class Mouse {
             }
             config.inHand.draw();
             pop();
+        } else if (!config.objectMap.cellIsEmpty(this.cell)) {
+            let cellObject = config.objectMap.getCell(this.cell);
+            cellObject.drawInfo();
         }
 
         rect(this.cell.x * config.gridSize, this.cell.y * config.gridSize, size.x * config.gridSize, size.y * config.gridSize);
@@ -31,16 +42,8 @@ export default class Mouse {
         pop();
     }
 
-    precalculateCell() {
-        /** @type {p5.Vector} */
-        this.cell = new p5.Vector(
-            Math.floor((mouseX + config.origin.x) / (config.gridSize * config.zoom.scale)),
-            Math.floor((mouseY + config.origin.y) / (config.gridSize * config.zoom.scale)),
-        );
-    }
-
     /**
-     * @return {p5.Vector}
+     * @returns {p5.Vector}
      */
     cellSize() {
         if (config.inHand !== null) {
@@ -53,7 +56,7 @@ export default class Mouse {
     /**
      * @param {p5.Vector} cell
      * @param {p5.Vector} size
-     * @return {void}
+     * @returns {void}
      */
     cellFill(cell, size) {
         fill(200, 200, 200, 200);

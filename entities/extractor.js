@@ -31,22 +31,38 @@ export default class Extractor extends Entity {
     configureOutput(originCell, direction) {
         dump(originCell);
         dump(direction);
-        switch (direction.value) {
-            case Direction.Up.value:
-                this.output = new Output(new p5.Vector(originCell.x, originCell.y), direction);
-                break;
-            case Direction.Right.value:
-                this.output = new Output(new p5.Vector(originCell.x + 1, originCell.y), direction);
-                break;
-            case Direction.Down.value:
-                this.output = new Output(new p5.Vector(originCell.x + 1, originCell.y + 1), direction);
-                break;
-            case Direction.Left.value:
-                this.output = new Output(new p5.Vector(originCell.x, originCell.y + 1), direction);
-                break;
-        }
+
+        this.output = new Output(this.outputCell(originCell, direction), direction);
 
         dump(this.output);
+    }
+
+    /**
+     * @param {p5.Vector} originCell 
+     * @param {Direction} direction 
+     * @returns {p5.Vector}
+     */
+    outputCell(originCell, direction) {
+        switch (direction.value) {
+            case Direction.Up.value:
+                return new p5.Vector(originCell.x, originCell.y);
+            case Direction.Right.value:
+                return new p5.Vector(originCell.x + 1, originCell.y);
+            case Direction.Down.value:
+                return new p5.Vector(originCell.x + 1, originCell.y + 1);
+            case Direction.Left.value:
+                return new p5.Vector(originCell.x, originCell.y + 1);
+        }
+    }
+
+    /**
+     * @param {boolean} clockwise
+     */
+    rotate(clockwise = true) {
+        super.rotate(clockwise);
+
+        this.output.cell = new Cell(this.outputCell(this.originCell, this.direction));
+        this.output.direction = this.direction;
     }
 
     /**
@@ -72,8 +88,11 @@ export default class Extractor extends Entity {
      * @param {p5.Vector} cell
      */
     draw(cell) {
+
         if (this.isGhost) {
             fill(40, 40, 40, 40);
+
+            this.drawInfo(cell)
         } else {
             fill(0);
         }
@@ -101,5 +120,17 @@ export default class Extractor extends Entity {
         this.item.draw(new p5.Vector(0, 0));
 
         pop();
+    }
+
+    /**
+     * @param {p5.Vector} cell 
+     */
+    drawInfo(cell) {
+        if (this.isGhost) {
+            this.output.cell = new Cell(this.outputCell(cell, this.direction));
+            this.output.direction = this.direction;
+        }
+
+        this.output.drawInfo(this.isGhost);
     }
 }

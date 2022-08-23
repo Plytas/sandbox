@@ -7,7 +7,7 @@ export default class Direction {
     }
 
     /**
-     * @return {Direction}
+     * @returns {Direction}
      * @constructor
      */
     static get Up() {
@@ -15,7 +15,7 @@ export default class Direction {
     }
 
     /**
-     * @return {Direction}
+     * @returns {Direction}
      * @constructor
      */
     static get Right() {
@@ -23,7 +23,7 @@ export default class Direction {
     }
 
     /**
-     * @return {Direction}
+     * @returns {Direction}
      * @constructor
      */
     static get Down() {
@@ -31,7 +31,7 @@ export default class Direction {
     }
 
     /**
-     * @return {Direction}
+     * @returns {Direction}
      * @constructor
      */
     static get Left() {
@@ -39,7 +39,7 @@ export default class Direction {
     }
 
     /**
-     * @return {number}
+     * @returns {number}
      */
     rotation() {
         return [
@@ -51,21 +51,21 @@ export default class Direction {
     }
 
     /**
-     * @return {Direction}
+     * @returns {Direction}
      */
     clockwise() {
         return new Direction((this.value + 1) % 4);
     }
 
     /**
-     * @return {Direction}
+     * @returns {Direction}
      */
     counterclockwise() {
         return new Direction((this.value + 3) % 4);
     }
 
     /**
-     * @return {Direction}
+     * @returns {Direction}
      */
     opposite() {
         return new Direction((this.value + 2) % 4);
@@ -73,7 +73,7 @@ export default class Direction {
 
     /**
      * @param {Direction} direction
-     * @return {Direction}
+     * @returns {Direction}
      */
     inRelationToDirection(direction) {
         return new Direction((4 + this.value - direction.value) % 4);

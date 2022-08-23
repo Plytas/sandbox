@@ -36,6 +36,13 @@ export default class Entity {
     }
 
     /**
+     * @param {p5.Vector} cell 
+     */
+    drawInfo(cell) {
+
+    }
+
+    /**
      * @param {Cell} cell
      */
     work(cell) {
@@ -53,7 +60,7 @@ export default class Entity {
 
     /**
      * @param {Direction} direction
-     * @return {boolean}
+     * @returns {boolean}
      */
     isAcceptingItems(direction) {
         return false
@@ -62,7 +69,7 @@ export default class Entity {
     /**
      * @param {Direction} direction
      * @param {Item} item
-     * @return {boolean}
+     * @returns {boolean}
      */
     acceptItem(direction, item) {
         return false

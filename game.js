@@ -35,7 +35,7 @@ export function iterateOverCells(cell, size, callback) {
 
 /**
  * @param {p5.Vector} cell
- * @return {boolean}
+ * @returns {boolean}
  */
 export function cellIsOutOfBounds(cell) {
     return cell.x < 0 ||

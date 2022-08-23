@@ -54,6 +54,14 @@ export default class Cell {
         this.entity.drawItem(new p5.Vector(this.x, this.y));
     }
 
+    drawInfo() {
+        if (this.isEmpty()) {
+            return;
+        }
+
+        this.entity.drawInfo(new p5.Vector(this.x, this.y));
+    }
+
     work() {
         if (this.isEmpty()) {
             return;
@@ -88,7 +96,7 @@ export default class Cell {
 
     /**
      * @param {Direction} direction
-     * @return {boolean}
+     * @returns {boolean}
      */
     isAcceptingItems(direction) {
         if (this.isEmpty()) {
@@ -102,7 +110,7 @@ export default class Cell {
      *
      * @param {Direction} direction
      * @param {Item} item
-     * @return {boolean}
+     * @returns {boolean}
      */
     acceptItem(direction, item) {
         if (this.isEmpty()) {

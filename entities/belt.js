@@ -189,7 +189,7 @@ export default class Belt extends Entity {
 
     /**
      * @param {Direction} direction
-     * @return {boolean}
+     * @returns {boolean}
      */
     isAcceptingItems(direction) {
         if (direction.opposite().value === this.direction.value) {
@@ -202,7 +202,7 @@ export default class Belt extends Entity {
     /**
      * @param {Direction} direction
      * @param {Item} item
-     * @return {boolean}
+     * @returns {boolean}
      */
     acceptItem(direction, item) {
         if (this.item !== null) {
