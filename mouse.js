@@ -1,10 +1,10 @@
-import { config } from "./config.js";
-import * as game from "./game.js";
+import {config} from "./config.js";
+import {game} from "./game.js";
 
 export default class Mouse {
-    precalculateCell() {
+    precalculatePosition() {
         /** @type {p5.Vector} */
-        this.cell = new p5.Vector(
+        this.position = new p5.Vector(
             Math.floor((mouseX + config.origin.x) / (config.gridSize * config.zoom.scale)),
             Math.floor((mouseY + config.origin.y) / (config.gridSize * config.zoom.scale)),
         );
@@ -16,27 +16,19 @@ export default class Mouse {
         stroke(51);
 
         let size = this.cellSize()
-        this.cellFill(this.cell, size)
+        this.cellFill(this.position, size)
 
-        if (config.inHand !== null) {
-            config.inHand.position(this.cell);
-
-            push();
-            if (!config.objectMap.cellIsEmpty(this.cell)) {
-                translate(2, 2);
-            }
-            config.inHand.draw();
-            pop();
-        } else if (!config.objectMap.cellIsEmpty(this.cell)) {
-            let cellObject = config.objectMap.getCell(this.cell);
-            cellObject.drawInfo();
+        if (!game.state.inHand.isEmpty()) {
+            game.state.inHand.draw(this.position);
+        } else if (!game.state.objectMap.positionIsEmpty(this.position)) {
+            game.state.objectMap.getCell(this.position).drawInfo();
         }
 
-        rect(this.cell.x * config.gridSize, this.cell.y * config.gridSize, size.x * config.gridSize, size.y * config.gridSize);
+        rect(this.position.x * config.gridSize, this.position.y * config.gridSize, size.x * config.gridSize, size.y * config.gridSize);
 
         if (config.debug) {
             fill(255);
-            text(this.cell.x + ":" + this.cell.y, this.cell.x * config.gridSize, this.cell.y * config.gridSize);
+            text(this.position.x + ":" + this.position.y, this.position.x * config.gridSize, this.position.y * config.gridSize);
         }
 
         pop();
@@ -46,24 +38,79 @@ export default class Mouse {
      * @returns {p5.Vector}
      */
     cellSize() {
-        if (config.inHand !== null) {
-            return config.inHand.entity.size;
+        if (!game.state.inHand.isEmpty()) {
+            return game.state.inHand.entity.size;
         }
 
         return new p5.Vector(1, 1);
     }
 
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
      * @param {p5.Vector} size
      * @returns {void}
      */
-    cellFill(cell, size) {
+    cellFill(position, size) {
         fill(200, 200, 200, 200);
 
-        game.iterateOverCells(cell, size, (callbackCell) => {
-            if (game.cellIsOutOfBounds(callbackCell) || !config.objectMap.cellIsEmpty(callbackCell)) {
+        game.engine.iterateOverPositions(position, size, (callbackPosition) => {
+            if (game.engine.positionIsOutOfBounds(callbackPosition) || !game.state.objectMap.positionIsEmpty(callbackPosition)) {
                 return fill(200, 0, 0, 100);
+            }
+        });
+    }
+
+    click() {
+        let position = this.position;
+        let size = this.cellSize();
+
+        if (this.anyPositionIsOutOfBounds(position, size)) {
+            return;
+        }
+
+        if (!game.state.inHand.isEmpty()) {
+            if (this.anyPositionIsNotEmpty(position, size)) {
+                return;
+            }
+
+            if (game.state.inHand.isBelt()) {
+                game.state.createBelt();
+            } else if (game.state.inHand.isExtractor()) {
+                game.state.createExtractor();
+            }
+
+            return;
+        }
+
+        game.state.objectMap.performActionOnPosition(position);
+    }
+
+    wheel(event) {
+        game.camera.performZoom(new p5.Vector(event.x, event.y), event.deltaY > 0)
+    }
+
+    /**
+     * @param {p5.Vector} position
+     * @param {p5.Vector} size
+     * @return boolean|void
+     */
+    anyPositionIsOutOfBounds(position, size) {
+        return game.engine.iterateOverPositions(position, size, (callbackPosition) => {
+            if (game.engine.positionIsOutOfBounds(callbackPosition)) {
+                return true;
+            }
+        });
+    }
+
+    /**
+     * @param {p5.Vector} position
+     * @param {p5.Vector} size
+     * @return boolean|void
+     */
+    anyPositionIsNotEmpty(position, size) {
+        return game.engine.iterateOverPositions(position, size, (callbackPosition) => {
+            if (!game.state.objectMap.positionIsEmpty(callbackPosition)) {
+                return true;
             }
         });
     }

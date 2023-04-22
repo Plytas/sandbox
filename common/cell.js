@@ -1,15 +1,14 @@
-import Entity from "../entities/entity.js";
-import Item from "../items/item.js";
 import Direction from "./direction.js";
+import Item from "../items/item.js";
 
 export default class Cell {
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
      * @param {Entity|null} entity
      */
-    constructor(cell, entity = null) {
-        this.x = cell.x;
-        this.y = cell.y;
+    constructor(position, entity = null) {
+        this.x = position.x;
+        this.y = position.y;
         /** @type {Entity|null} */
         this.entity = entity;
     }
@@ -132,7 +131,7 @@ export default class Cell {
      * @param {Direction|null} direction
      * @returns {p5.Vector|null}
      */
-    nextCell(direction = null) {
+    nextPosition(direction = null) {
         if (direction === null) {
             if (this.isEmpty()) {
                 return null

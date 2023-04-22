@@ -1,19 +1,18 @@
-import { config } from "../config.js";
+import {config} from "../config.js";
 import Cell from "./cell.js";
-import Direction from "./direction.js";
 
 export default class Output {
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
      * @param {Direction} direction
      */
-    constructor(cell, direction) {
-        this.cell = new Cell(cell);
+    constructor(position, direction) {
+        this.cell = new Cell(position);
         this.direction = direction;
     }
 
     /**
-     * @param {boolean} isGhost 
+     * @param {boolean} isGhost
      */
     drawInfo(isGhost = false) {
         push();

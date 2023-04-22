@@ -1,5 +1,7 @@
-import Cell from './common/cell.js';
 import { config } from './config.js';
+import {game} from "./game.js";
+import Belt from "./entities/belt.js";
+import Item from "./items/item.js";
 
 export default class ObjectMap {
     constructor() {
@@ -12,13 +14,13 @@ export default class ObjectMap {
     }
 
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
      * @returns boolean
      */
-    cellIsEmpty(cell) {
-        return this.cells[cell.x] === undefined ||
-            this.cells[cell.x][cell.y] === undefined ||
-            this.cells[cell.x][cell.y].isEmpty()
+    positionIsEmpty(position) {
+        return this.cells[position.x] === undefined ||
+            this.cells[position.x][position.y] === undefined ||
+            this.cells[position.x][position.y].isEmpty()
     }
 
     /**
@@ -33,41 +35,62 @@ export default class ObjectMap {
     }
 
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
      * @returns {null|Cell}
      */
-    getCell(cell) {
-        if (this.cellIsEmpty(cell)) {
+    getCell(position) {
+        if (this.positionIsEmpty(position)) {
             return null;
         }
 
-        return this.cells[cell.x][cell.y];
+        return this.cells[position.x][position.y];
     }
 
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
+     */
+    performActionOnPosition(position) {
+        if (this.positionIsEmpty(position)) {
+            return;
+        }
+
+        let object = this.getCell(position);
+
+        if (object.entity instanceof Belt) {
+            object.acceptItem(object.entity.direction, new Item());
+
+            return;
+        }
+
+        game.engine.iterateOverPositions(object.entity.originPosition, object.entity.size, (callbackPosition) => {
+            game.state.objectMap.deleteObjectInPosition(callbackPosition);
+        });
+    }
+
+    /**
+     * @param {p5.Vector} position
      * @param {boolean} clockwise
      */
-    rotateObjectInCell(cell, clockwise = true) {
-        if (this.cellIsEmpty(cell)) {
+    rotateObjectInPosition(position, clockwise = true) {
+        if (this.positionIsEmpty(position)) {
             return;
         }
 
-        this.cells[cell.x][cell.y].rotate(clockwise);
+        this.cells[position.x][position.y].rotate(clockwise);
     }
 
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
      */
-    deleteObjectInCell(cell) {
-        if (this.cellIsEmpty(cell)) {
+    deleteObjectInPosition(position) {
+        if (this.positionIsEmpty(position)) {
             return;
         }
 
-        this.cells[cell.x][cell.y].destroy();
+        this.cells[position.x][position.y].destroy();
     }
 
-    processCells() {
+    processObjects() {
         this.processExtractors();
         this.processBelts();
     }

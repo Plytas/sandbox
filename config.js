@@ -1,10 +1,8 @@
-import Cell from "./common/cell.js";
-import Direction from "./common/direction.js";
-import Mouse from "./mouse.js";
-import ObjectMap from "./objectMap.js";
-
 export const config = {
     debug: false,
+    toggleDebug: () => {
+        config.debug = !config.debug;
+    },
     gridSize: 50,
     zoom: {
         min: 0.4,
@@ -16,13 +14,6 @@ export const config = {
     mapSize: new p5.Vector(2500, 2500),
     canvasSize: new p5.Vector(500, 500),
     origin: new p5.Vector(0, 0),
-    mouse: new Mouse(),
-
-    objectMap: new ObjectMap(),
-
-    /** @type {Cell|null} */
-    inHand: null,
-    globalDirection: Direction.Up,
 
     touchZoom: [],
     touchMovement: [],
@@ -30,4 +21,19 @@ export const config = {
     oresSpriteSheet: null,
     oresSpriteData: null,
     beltAnimationProgress: 30,
+    toggleFullscreen: () => {
+        fullscreen(!fullscreen());
+    },
+    keyCodes: {
+        a: 65,
+        b: 66,
+        d: 68,
+        f: 70,
+        m: 77,
+        q: 81,
+        r: 82,
+        s: 83,
+        w: 87,
+        x: 88,
+    }
 }

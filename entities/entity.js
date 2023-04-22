@@ -1,14 +1,14 @@
 import Direction from '../common/direction.js';
-import Item from '../items/item.js';
+import Item from "../items/item.js";
 
 export default class Entity {
     /**
-     * @param {p5.Vector} originCell
+     * @param {p5.Vector} originPosition
      * @param {Direction} direction
      * @param {boolean} isGhost
      */
-    constructor(originCell, direction = Direction.Up, isGhost = false) {
-        this.originCell = originCell;
+    constructor(originPosition, direction = Direction.Up, isGhost = false) {
+        this.originPosition = originPosition;
         this.size = new p5.Vector(1, 1);
         this.direction = direction;
         this.isGhost = isGhost;
@@ -22,23 +22,23 @@ export default class Entity {
     }
 
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
      */
-    draw(cell) {
+    draw(position) {
 
     }
 
     /**
-     * @param {p5.Vector} cell
+     * @param {p5.Vector} position
      */
-    drawItem(cell) {
+    drawItem(position) {
 
     }
 
     /**
-     * @param {p5.Vector} cell 
+     * @param {p5.Vector} position
      */
-    drawInfo(cell) {
+    drawInfo(position) {
 
     }
 
