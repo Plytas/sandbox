@@ -1,5 +1,6 @@
 import Direction from "./direction.js";
 import Item from "../items/item.js";
+import {game} from "../game.js";
 
 export default class Cell {
     /**
@@ -82,6 +83,17 @@ export default class Cell {
 
     /**
      * @param {Direction} direction
+     * @returns {boolean}
+     */
+    hasOutput(direction) {
+        return !this.isEmpty()
+            && this.entity.hasOutput()
+            && this.entity.output.cell.position().equals(this.position())
+            && this.entity.output.direction.equals(direction);
+    }
+
+    /**
+     * @param {Direction} direction
      * @param {Item} item
      * @returns {boolean}
      */
@@ -90,7 +102,7 @@ export default class Cell {
             return false;
         }
 
-        return this.entity.acceptsItem(direction, item);
+        return this.entity.hasInput() && this.entity.acceptsItem(direction, item);
     }
 
     /**
@@ -150,6 +162,87 @@ export default class Cell {
                 return new p5.Vector(this.x - 1, this.y);
             case Direction.Right.value:
                 return new p5.Vector(this.x + 1, this.y);
+        }
+    }
+
+    /**
+     * @param {Direction} direction
+     * @return {Cell}
+     */
+    getCellBehind(direction) {
+        let position = this.getPositionBehind(direction);
+
+        return game.state.objectMap.getCell(position);
+    }
+
+    /**
+     * @param {Direction} direction
+     * @return {p5.Vector}
+     */
+    getPositionBehind(direction) {
+        switch (direction.value) {
+            case Direction.Up.value:
+                return new p5.Vector(this.x, this.y + 1);
+            case Direction.Down.value:
+                return new p5.Vector(this.x, this.y - 1);
+            case Direction.Left.value:
+                return new p5.Vector(this.x + 1, this.y);
+            case Direction.Right.value:
+                return new p5.Vector(this.x - 1, this.y);
+        }
+    }
+
+    /**
+     * @param {Direction} direction
+     * @return {Cell}
+     */
+    getCellToTheLeft(direction) {
+        let position = this.getPositionToTheLeft(direction);
+
+        return game.state.objectMap.getCell(position);
+    }
+
+    /**
+     * @param {Direction} direction
+     * @return {p5.Vector}
+     */
+    getPositionToTheLeft(direction) {
+        switch (direction.value) {
+            case Direction.Up.value:
+                return new p5.Vector(this.x - 1, this.y);
+            case Direction.Down.value:
+                return new p5.Vector(this.x + 1, this.y);
+            case Direction.Left.value:
+                return new p5.Vector(this.x, this.y + 1);
+            case Direction.Right.value:
+                return new p5.Vector(this.x, this.y - 1);
+        }
+    }
+
+    /**
+     * @param {Direction} direction
+     * @return {Cell}
+     */
+    getCellToTheRight(direction) {
+        let position = this.getPositionToTheRight(direction);
+
+        return game.state.objectMap.getCell(position);
+    }
+
+    /**
+     * @param {Direction} direction
+     * @return {p5.Vector}
+     */
+    getPositionToTheRight(direction) {
+        switch (direction.value) {
+            case Direction.Up.value:
+                return new p5.Vector(this.x + 1, this.y);
+            case Direction.Down.value:
+                return new p5.Vector(this.x - 1, this.y);
+            case Direction.Left.value:
+                return new p5.Vector(this.x, this.y - 1);
+            case Direction.Right.value:
+                return new p5.Vector(this.x, this.y + 1);
         }
     }
 }

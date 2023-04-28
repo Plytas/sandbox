@@ -3,6 +3,10 @@ import {config} from "../config.js";
 import Entity from "./entity.js";
 import {game} from "../game.js";
 import Item from "../items/item.js";
+import Output from "../common/output.js";
+import Input from "../common/input.js";
+import {dump} from "../debug.js";
+import Cell from "../common/cell.js";
 
 export default class Belt extends Entity {
     /**
@@ -16,7 +20,58 @@ export default class Belt extends Entity {
         this.item = null;
         this.progress = 0;
         this.reset = false;
-        this.fromDirection = direction.opposite();
+
+        this.configureInput();
+        this.configureOutput();
+    }
+
+    configureInput() {
+        this.input = new Input(this.originPosition, this.inputDirection());
+    }
+
+    /**
+     * @returns {Direction}
+     */
+    inputDirection() {
+        let cellBehind = (new Cell(this.originPosition).getCellBehind(this.direction));
+
+        if (cellBehind.hasOutput(this.direction.inRelationToDirection(Direction.Down).opposite())) {
+            return this.direction.opposite();
+        }
+
+        let cellToTheLeft = (new Cell(this.originPosition).getCellToTheLeft(this.direction));
+        let cellToTheRight = (new Cell(this.originPosition)).getCellToTheRight(this.direction);
+
+        if ((cellToTheLeft.isEmpty() && cellToTheRight.isEmpty())) {
+            return this.direction.opposite();
+        }
+
+        let cellToTheLeftHasOutput = cellToTheLeft.hasOutput(this.direction.inRelationToDirection(Direction.Left));
+        let cellToTheRightHasOutput = cellToTheRight.hasOutput(this.direction.inRelationToDirection(Direction.Right))
+
+        if ((cellToTheLeftHasOutput && cellToTheRightHasOutput) || (!cellToTheLeftHasOutput && !cellToTheRightHasOutput)) {
+            return this.direction.opposite();
+        }
+
+        if (cellToTheLeftHasOutput) {
+            return this.direction.inRelationToDirection(Direction.Left).opposite();
+        }
+
+        return this.direction.inRelationToDirection(Direction.Right).opposite();
+    }
+
+    configureOutput() {
+        this.output = new Output(this.originPosition, this.direction);
+    }
+
+    /**
+     * @param {boolean} clockwise
+     */
+    rotate(clockwise = true) {
+        super.rotate(clockwise);
+
+        this.configureInput();
+        this.configureOutput();
     }
 
     /**
@@ -24,47 +79,47 @@ export default class Belt extends Entity {
      */
     draw(position) {
         push();
-
-        translate(position.x * config.gridSize + config.gridSize / 2, position.y * config.gridSize + config.gridSize / 2);
-
-        rotate(this.direction.rotation());
-
         if (this.isGhost) {
-            fill(40, 40, 40, 40);
+            fill(40, 40, 40);
+
+            this.originPosition = position;
+            this.configureOutput();
+            this.configureInput();
         } else {
             fill(0);
         }
 
-        rectMode(CENTER);
-        rect(0, 0, config.gridSize, config.gridSize);
-        drawingContext.clip();
+        //middle
+        translate(position.x * config.gridSize + config.gridSize / 2, position.y * config.gridSize + config.gridSize / 2);
+        circle(0, 0, config.gridSize / 2 + 5)
+        rotate(this.direction.rotation());
 
-        this.drawBeltDetails();
+        //output
+        translate(- config.gridSize / 2 + 10, -config.gridSize / 2);
+        rect(0, 0, config.gridSize - 20, config.gridSize / 2);
+
+        //output details
+        push()
+        fill(255, 225, 25);
+        translate(+ config.gridSize / 2 - 10, 10)
+        triangle((-config.gridSize / 8), 0, 0, (-config.gridSize / 8), (config.gridSize / 8), 0);
+        pop()
+
+        //input
+        translate(+ config.gridSize / 2 - 10, config.gridSize / 2);
+        rotate(this.input.direction.inRelationToDirection(this.direction).opposite().rotation())
+
+        translate(- config.gridSize / 2 + 10, +config.gridSize / 2);
+        rect(0, 0, config.gridSize - 20, -config.gridSize / 2);
+
+        //input details
+        push()
+        fill(255, 225, 25);
+        translate(+ config.gridSize / 2 - 10, -15)
+        triangle((-config.gridSize / 8), 0, 0, (-config.gridSize / 8), (config.gridSize / 8), 0);
+        pop()
 
         pop();
-    }
-
-    drawBeltDetails() {
-        push();
-
-        translate(0, 25);
-
-        if (this.isGhost) {
-            fill(255, 225, 25, 40);
-        } else {
-            fill(255, 225, 25);
-        }
-
-        translate(0, -(config.beltAnimationProgress * config.gridSize / 60));
-        triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
-
-        translate(0, -config.gridSize);
-        triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
-
-        translate(0, 2 * config.gridSize);
-        triangle((-config.gridSize / 8), (config.gridSize / 8), 0, (-config.gridSize / 8), (config.gridSize / 8), (config.gridSize / 8));
-
-        pop()
     }
 
     /**
@@ -76,13 +131,13 @@ export default class Belt extends Entity {
 
         if (!this.isGhost && this.item !== null) {
             if (this.progress < 30 + (this.item.width / 2) / (config.gridSize / 60)) {
-                if (this.fromDirection.value === Direction.Left.value) {
+                if (this.input.direction.inRelationToDirection(this.direction).value === Direction.Left.value) {
                     rotate(this.direction.rotation());
                     translate(-(config.gridSize / 2 - (config.gridSize * this.progress / 60)) - this.item.width / 2, 0)
                     rotate(-this.direction.rotation());
 
                     this.item.draw(new p5.Vector(0, 0));
-                } else if (this.fromDirection.value === Direction.Right.value) {
+                } else if (this.input.direction.inRelationToDirection(this.direction).value === Direction.Right.value) {
                     rotate(this.direction.rotation());
                     translate((config.gridSize / 2 - (config.gridSize * this.progress / 60)) + this.item.width / 2, 0)
                     rotate(-this.direction.rotation());
@@ -105,6 +160,20 @@ export default class Belt extends Entity {
     }
 
     /**
+     * @param {p5.Vector} position
+     */
+    drawInfo(position) {
+        if (this.isGhost) {
+            this.originPosition = position;
+            this.configureOutput();
+            this.configureInput();
+        }
+
+        this.output.drawInfo(this.isGhost);
+        this.input.drawInfo(this.isGhost);
+    }
+
+    /**
      * @param {Cell} cell
      */
     work(cell) {
@@ -123,7 +192,7 @@ export default class Belt extends Entity {
             let nextPosition = cell.nextPosition()
             let object = game.state.objectMap.getCell(nextPosition)
 
-            if (object !== null && object.acceptItem(this.direction, this.item)) {
+            if (!object.isEmpty() && object.acceptItem(this.direction, this.item)) {
                 this.reset = true;
             }
 
@@ -139,7 +208,7 @@ export default class Belt extends Entity {
      * @returns {boolean}
      */
     acceptsItem(direction, item = null) {
-        return true
+        return direction.opposite().equals(this.input.direction);
     }
 
     /**
@@ -147,7 +216,7 @@ export default class Belt extends Entity {
      * @returns {boolean}
      */
     isAcceptingItems(direction) {
-        if (direction.opposite().value === this.direction.value) {
+        if (!direction.opposite().equals(this.input.direction)) {
             return false;
         }
 
@@ -160,12 +229,15 @@ export default class Belt extends Entity {
      * @returns {boolean}
      */
     acceptItem(direction, item) {
+        if (!direction.opposite().equals(this.input.direction)) {
+            return false;
+        }
+
         if (this.item !== null) {
             return false;
         }
 
         this.item = item;
-        this.fromDirection = direction.opposite().inRelationToDirection(this.direction);
 
         return true;
     }

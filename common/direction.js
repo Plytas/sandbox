@@ -78,4 +78,12 @@ export default class Direction {
     inRelationToDirection(direction) {
         return new Direction((4 + this.value - direction.value) % 4);
     }
+
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
+    equals(direction) {
+        return this.value === direction.value;
+    }
 }

@@ -24,7 +24,26 @@ export default class State {
             return;
         }
 
-        return this.objectMap.rotateObjectInPosition(this.mouse.position, clockwise);
+        let cell = this.objectMap.getCell(this.mouse.position);
+
+        if (cell.isEmpty()) {
+            return;
+        }
+
+        cell.rotate(clockwise);
+        let pos = new p5.Vector(cell.entity.originPosition.x - 1, cell.entity.originPosition.y - 1);
+
+        game.engine.iterateOverPositions(pos, new p5.Vector(cell.entity.size.x + 2, cell.entity.size.y + 2), (callbackPosition, loops) => {
+            if (callbackPosition.equals(this.mouse.position)) {
+                return;
+            }
+
+            let object = game.state.objectMap.getCell(callbackPosition)
+
+            if (object.entity instanceof Belt) {
+                object.entity.configureInput();
+            }
+        });
     }
 
     createBelt() {
@@ -38,6 +57,13 @@ export default class State {
         cell.draw();
 
         this.objectMap.belts.push(cell);
+
+        let nextPosition = belt.output.cell.nextPosition(belt.output.direction)
+        let object = game.state.objectMap.getCell(nextPosition)
+
+        if (object.entity instanceof Belt) {
+            object.entity.configureInput();
+        }
     }
 
     createExtractor() {
@@ -56,5 +82,12 @@ export default class State {
                 this.objectMap.extractors.push(cell);
             }
         });
+
+        let nextPosition = extractor.output.cell.nextPosition(extractor.output.direction)
+        let object = game.state.objectMap.getCell(nextPosition)
+
+        if (object.entity instanceof Belt) {
+            object.entity.configureInput();
+        }
     }
 }

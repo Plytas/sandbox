@@ -21,32 +21,26 @@ export default class Extractor extends Entity {
         this.steps = 0;
         this.item = new Item();
 
-        this.configureOutput(originPosition, direction);
+        this.configureOutput();
+    }
+
+    configureOutput() {
+        this.output = new Output(this.outputPosition(), this.direction);
     }
 
     /**
-     * @param {p5.Vector} originPosition
-     * @param {Direction} direction
-     */
-    configureOutput(originPosition, direction) {
-        this.output = new Output(this.outputPosition(originPosition, direction), direction);
-    }
-
-    /**
-     * @param {p5.Vector} originPosition
-     * @param {Direction} direction
      * @returns {p5.Vector}
      */
-    outputPosition(originPosition, direction) {
-        switch (direction.value) {
+    outputPosition() {
+        switch (this.direction.value) {
             case Direction.Up.value:
-                return new p5.Vector(originPosition.x, originPosition.y);
+                return new p5.Vector(this.originPosition.x, this.originPosition.y);
             case Direction.Right.value:
-                return new p5.Vector(originPosition.x + 1, originPosition.y);
+                return new p5.Vector(this.originPosition.x + 1, this.originPosition.y);
             case Direction.Down.value:
-                return new p5.Vector(originPosition.x + 1, originPosition.y + 1);
+                return new p5.Vector(this.originPosition.x + 1, this.originPosition.y + 1);
             case Direction.Left.value:
-                return new p5.Vector(originPosition.x, originPosition.y + 1);
+                return new p5.Vector(this.originPosition.x, this.originPosition.y + 1);
         }
     }
 
@@ -56,8 +50,7 @@ export default class Extractor extends Entity {
     rotate(clockwise = true) {
         super.rotate(clockwise);
 
-        this.output.cell = new Cell(this.outputPosition(this.originPosition, this.direction));
-        this.output.direction = this.direction;
+        this.configureOutput();
     }
 
     /**
@@ -86,8 +79,6 @@ export default class Extractor extends Entity {
 
         if (this.isGhost) {
             fill(40, 40, 40, 40);
-
-            this.drawInfo(position)
         } else {
             fill(0);
         }
@@ -121,8 +112,8 @@ export default class Extractor extends Entity {
      */
     drawInfo(position) {
         if (this.isGhost) {
-            this.output.cell = new Cell(this.outputPosition(position, this.direction));
-            this.output.direction = this.direction;
+            this.originPosition = position;
+            this.configureOutput();
         }
 
         this.output.drawInfo(this.isGhost);

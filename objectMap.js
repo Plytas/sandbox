@@ -2,6 +2,7 @@ import { config } from './config.js';
 import {game} from "./game.js";
 import Belt from "./entities/belt.js";
 import Item from "./items/item.js";
+import Cell from "./common/cell.js";
 
 export default class ObjectMap {
     constructor() {
@@ -36,11 +37,11 @@ export default class ObjectMap {
 
     /**
      * @param {p5.Vector} position
-     * @returns {null|Cell}
+     * @returns {Cell}
      */
     getCell(position) {
         if (this.positionIsEmpty(position)) {
-            return null;
+            return new Cell(position);
         }
 
         return this.cells[position.x][position.y];
@@ -57,7 +58,7 @@ export default class ObjectMap {
         let object = this.getCell(position);
 
         if (object.entity instanceof Belt) {
-            object.acceptItem(object.entity.direction, new Item());
+            object.acceptItem(object.entity.input.direction.opposite(), new Item());
 
             return;
         }
@@ -65,18 +66,6 @@ export default class ObjectMap {
         game.engine.iterateOverPositions(object.entity.originPosition, object.entity.size, (callbackPosition) => {
             game.state.objectMap.deleteObjectInPosition(callbackPosition);
         });
-    }
-
-    /**
-     * @param {p5.Vector} position
-     * @param {boolean} clockwise
-     */
-    rotateObjectInPosition(position, clockwise = true) {
-        if (this.positionIsEmpty(position)) {
-            return;
-        }
-
-        this.cells[position.x][position.y].rotate(clockwise);
     }
 
     /**

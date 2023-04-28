@@ -7,8 +7,8 @@ export default class Item {
         this.image = config.oresSpriteSheet.get(pos.x, pos.y, pos.w, pos.h);
 
         // this.image = image;
-        this.width = config.gridSize * 0.6;
-        this.height = config.gridSize * 0.6;
+        this.width = config.gridSize * 0.4;
+        this.height = config.gridSize * 0.4;
     }
 
     /**

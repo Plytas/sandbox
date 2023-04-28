@@ -40,9 +40,9 @@ export default class inHand {
             return;
         }
 
-        if (!game.state.objectMap.positionIsEmpty(game.state.mouse.position)) {
-            let cellObject = game.state.objectMap.getCell(game.state.mouse.position);
+        let cellObject = game.state.objectMap.getCell(game.state.mouse.position);
 
+        if (!cellObject.isEmpty()) {
             this.globalDirection = cellObject.entity.direction;
             this.entity = new cellObject.entity.constructor(game.state.mouse.position, this.globalDirection, true);
         }
@@ -68,7 +68,6 @@ export default class inHand {
         this.globalDirection = this.entity.direction;
     }
 
-
     /**
      * @param {p5.Vector} position
      */
@@ -84,6 +83,25 @@ export default class inHand {
         }
 
         this.entity.draw(position);
+
+        pop();
+    }
+
+    /**
+     * @param {p5.Vector} position
+     */
+    drawInfo(position) {
+        if (this.isEmpty()) {
+            return;
+        }
+
+        push();
+
+        if (!game.state.objectMap.positionIsEmpty(position)) {
+            translate(2, 2);
+        }
+
+        this.entity.drawInfo(position);
 
         pop();
     }

@@ -12,21 +12,26 @@ export default class Mouse {
 
     draw() {
         push();
-        strokeWeight(1);
-        stroke(51);
 
         let size = this.cellSize()
         this.cellFill(this.position, size)
 
         if (!game.state.inHand.isEmpty()) {
             game.state.inHand.draw(this.position);
-        } else if (!game.state.objectMap.positionIsEmpty(this.position)) {
-            game.state.objectMap.getCell(this.position).drawInfo();
         }
+
+        strokeWeight(1);
+        stroke(51);
 
         rect(this.position.x * config.gridSize, this.position.y * config.gridSize, size.x * config.gridSize, size.y * config.gridSize);
 
         if (config.debug) {
+            if (!game.state.inHand.isEmpty()) {
+                game.state.inHand.drawInfo(this.position);
+            } else if (!game.state.objectMap.positionIsEmpty(this.position)) {
+                game.state.objectMap.getCell(this.position).drawInfo();
+            }
+
             fill(255);
             text(this.position.x + ":" + this.position.y, this.position.x * config.gridSize, this.position.y * config.gridSize);
         }
