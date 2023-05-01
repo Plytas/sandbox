@@ -1,4 +1,3 @@
-import Cell from "../common/cell.js";
 import Direction from "../common/direction.js";
 import Output from "../common/output.js";
 import {config} from "../config.js";
@@ -53,10 +52,7 @@ export default class Extractor extends Entity {
         this.configureOutput();
     }
 
-    /**
-     * @param {Cell} cell
-     */
-    work(cell) {
+    work() {
         if (this.steps >= this.craftingTime) {
             let nextPosition = this.output.cell.nextPosition(this.output.direction);
             let object = game.state.objectMap.getCell(nextPosition);
@@ -117,5 +113,29 @@ export default class Extractor extends Entity {
         }
 
         this.output.drawInfo(this.isGhost);
+    }
+
+    providesItem(direction) {
+        return direction.opposite().equals(this.output.direction);
+    }
+
+    isProvidingItem(direction) {
+        return this.item !== null && this.steps >= this.craftingTime;
+    }
+
+    provideItem(direction) {
+        if (this.item === null) {
+            return null;
+        }
+
+        if (this.steps < this.craftingTime) {
+            return null;
+        }
+
+        let item = this.item;
+        this.steps = 0;
+        this.item = new Item();
+
+        return item;
     }
 }

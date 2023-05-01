@@ -6,6 +6,7 @@ import Extractor from "./entities/extractor.js";
 import {config} from "./config.js";
 import {game} from "./game.js";
 import inHand from "./inHand.js";
+import Merger from "./entities/merger.js";
 
 export default class State {
     constructor() {
@@ -16,6 +17,9 @@ export default class State {
 
     processObjects() {
         this.objectMap.processObjects();
+        this.objectMap.drawObjects();
+        this.objectMap.drawItems();
+        this.objectMap.drawObjectDetails();
     }
 
     rotateOnMouse(clockwise = true) {
@@ -33,7 +37,7 @@ export default class State {
         cell.rotate(clockwise);
         let pos = new p5.Vector(cell.entity.originPosition.x - 1, cell.entity.originPosition.y - 1);
 
-        game.engine.iterateOverPositions(pos, new p5.Vector(cell.entity.size.x + 2, cell.entity.size.y + 2), (callbackPosition, loops) => {
+        game.engine.iterateOverPositions(pos, new p5.Vector(cell.entity.size.x + 2, cell.entity.size.y + 2), (callbackPosition) => {
             if (callbackPosition.equals(this.mouse.position)) {
                 return;
             }
@@ -84,6 +88,26 @@ export default class State {
         });
 
         let nextPosition = extractor.output.cell.nextPosition(extractor.output.direction)
+        let object = game.state.objectMap.getCell(nextPosition)
+
+        if (object.entity instanceof Belt) {
+            object.entity.configureInput();
+        }
+    }
+
+    createMerger() {
+        let handPosition = this.mouse.position;
+        let merger = new Merger(handPosition, this.inHand.entity.direction);
+        let cell = new Cell(handPosition, merger);
+        this.objectMap.setCell(cell);
+
+        translate(-config.origin.x, -config.origin.y);
+        scale(config.zoom.scale);
+        cell.draw();
+
+        this.objectMap.mergers.push(cell);
+
+        let nextPosition = merger.output.cell.nextPosition(merger.output.direction)
         let object = game.state.objectMap.getCell(nextPosition)
 
         if (object.entity instanceof Belt) {

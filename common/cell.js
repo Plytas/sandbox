@@ -43,7 +43,7 @@ export default class Cell {
             return;
         }
 
-        this.entity.draw(new p5.Vector(this.x, this.y));
+        this.entity.draw(this.position());
     }
 
     drawItem() {
@@ -51,7 +51,15 @@ export default class Cell {
             return;
         }
 
-        this.entity.drawItem(new p5.Vector(this.x, this.y));
+        this.entity.drawItem(this.position());
+    }
+
+    drawDetails() {
+        if (this.isEmpty()) {
+            return;
+        }
+
+        this.entity.drawDetails(this.position());
     }
 
     drawInfo() {
@@ -59,7 +67,7 @@ export default class Cell {
             return;
         }
 
-        this.entity.drawInfo(new p5.Vector(this.x, this.y));
+        this.entity.drawInfo(this.position());
     }
 
     work() {
@@ -67,7 +75,7 @@ export default class Cell {
             return;
         }
 
-        this.entity.work(this);
+        this.entity.work();
     }
 
     /**
@@ -137,6 +145,50 @@ export default class Cell {
         }
 
         return this.entity.acceptItem(direction, item);
+    }
+
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
+    providesItem(direction) {
+        if (this.isEmpty()) {
+            return false;
+        }
+
+        return this.entity.hasOutput() && this.entity.providesItem(direction);
+    }
+
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
+    isProvidingItem(direction) {
+        if (this.isEmpty()) {
+            return false;
+        }
+
+        return this.entity.isProvidingItem(direction);
+    }
+
+    /**
+     * @param {Direction} direction
+     * @returns {Item|null}
+     */
+    provideItem(direction) {
+        if (this.isEmpty()) {
+            return null;
+        }
+
+        if (!this.providesItem(direction)) {
+            return null;
+        }
+
+        if (!this.isProvidingItem(direction)) {
+            return null;
+        }
+
+        return this.entity.provideItem(direction);
     }
 
     /**

@@ -1,7 +1,5 @@
 import Direction from '../common/direction.js';
-import Item from "../items/item.js";
-import Input from "../common/input.js";
-import Output from "../common/output.js";
+import Item from '../items/item.js';
 
 export default class Entity {
     /**
@@ -16,8 +14,12 @@ export default class Entity {
         this.isGhost = isGhost;
         /** @type {Input|null} */
         this.input = null;
+        /** @type {array|null} */
+        this.inputs = null
         /** @type {Output|null} */
         this.output = null;
+        /** @type {array|null} */
+        this.outputs = null;
     }
 
     /**
@@ -49,9 +51,13 @@ export default class Entity {
     }
 
     /**
-     * @param {Cell} cell
+     * @param {p5.Vector} position
      */
-    work(cell) {
+    drawDetails(position) {
+
+    }
+
+    work() {
 
     }
 
@@ -59,14 +65,14 @@ export default class Entity {
      * @return {boolean}
      */
     hasInput() {
-        return this.input !== null;
+        return this.input !== null || this.inputs !== null;
     }
 
     /**
      * @return {boolean}
      */
     hasOutput() {
-        return this.output !== null;
+        return this.output !== null || this.outputs !== null;
     }
 
     /**
@@ -75,7 +81,7 @@ export default class Entity {
      * @returns {boolean}
      */
     acceptsItem(direction, item) {
-        return false
+        return false;
     }
 
     /**
@@ -83,7 +89,7 @@ export default class Entity {
      * @returns {boolean}
      */
     isAcceptingItems(direction) {
-        return false
+        return false;
     }
 
     /**
@@ -92,6 +98,30 @@ export default class Entity {
      * @returns {boolean}
      */
     acceptItem(direction, item) {
-        return false
+        return false;
+    }
+
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
+    providesItem(direction) {
+        return false;
+    }
+
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
+    isProvidingItem(direction) {
+        return false;
+    }
+
+    /**
+     * @param {Direction} direction
+     * @returns {Item|null}
+     */
+    provideItem(direction) {
+        return null;
     }
 }

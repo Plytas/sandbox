@@ -19,8 +19,8 @@ export function draw() {
     pop();
 }
 
-export function dump(value) {
+export function dump(...values) {
     if (config.debug) {
-        console.log(value);
+        values.forEach((value) => console.log(value))
     }
 }

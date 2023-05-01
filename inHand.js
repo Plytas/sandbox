@@ -2,6 +2,7 @@ import Belt from "./entities/belt.js";
 import Extractor from "./entities/extractor.js";
 import {game} from "./game.js";
 import Direction from "./common/direction.js";
+import Merger from "./entities/merger.js";
 
 export default class inHand {
     /**
@@ -34,6 +35,10 @@ export default class inHand {
         return this.entity instanceof Extractor;
     }
 
+    isMerger() {
+        return this.entity instanceof Merger;
+    }
+
     usePicker() {
         if (!this.isEmpty()) {
             this.entity = null;
@@ -54,6 +59,10 @@ export default class inHand {
 
     pickExtractor() {
         this.entity = new Extractor(game.state.mouse.position, this.globalDirection, true);
+    }
+
+    pickMerger() {
+        this.entity = new Merger(game.state.mouse.position, this.globalDirection, true);
     }
 
     /**

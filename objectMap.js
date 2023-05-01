@@ -1,4 +1,3 @@
-import { config } from './config.js';
 import {game} from "./game.js";
 import Belt from "./entities/belt.js";
 import Item from "./items/item.js";
@@ -12,6 +11,8 @@ export default class ObjectMap {
         this.extractors = [];
         /** @type {Cell[]} */
         this.belts = [];
+        /** @type {Cell[]} */
+        this.mergers = [];
     }
 
     /**
@@ -80,69 +81,81 @@ export default class ObjectMap {
     }
 
     processObjects() {
-        this.processExtractors();
-        this.processBelts();
+        this.iterateObjects(this.extractors, (cell, index) => {
+            if (cell.isEmpty()) {
+                this.extractors.splice(index, 1);
+                return;
+            }
+
+            cell.work();
+        });
+        this.iterateObjects(this.belts, (cell, index) => {
+            if (cell.isEmpty()) {
+                this.belts.splice(index, 1);
+                return;
+            }
+
+            cell.work();
+        });
+        this.iterateObjects(this.mergers, (cell, index) => {
+            if (cell.isEmpty()) {
+                this.mergers.splice(index, 1);
+                return;
+            }
+
+            cell.work();
+        });
     }
 
-    processExtractors() {
-        this.extractors
-            .slice()
-            .reverse()
-            .forEach((cell, index, list) => {
-                if (cell.isEmpty()) {
-                    this.extractors.splice(list.length - 1 - index, 1);
-                    return;
-                }
-
-                cell.draw();
-            });
-
-        this.extractors
-            .slice()
-            .reverse()
-            .forEach((cell) => {
-                cell.drawItem();
-            });
-
-        this.extractors
-            .slice()
-            .reverse()
-            .forEach((cell) => {
-                cell.work();
-            });
+    drawObjects() {
+        this.iterateObjects(this.extractors, (cell) => {
+            cell.draw();
+        })
+        this.iterateObjects(this.belts, (cell) => {
+            cell.draw();
+        })
+        this.iterateObjects(this.mergers, (cell) => {
+            cell.draw();
+        })
     }
 
-    processBelts() {
-        if (config.beltAnimationProgress > 60) {
-            config.beltAnimationProgress = 0;
-        }
+    drawItems() {
+        this.iterateObjects(this.extractors, (cell) => {
+            cell.drawItem();
+        });
+        this.iterateObjects(this.belts, (cell) => {
+            cell.drawItem();
+        });
+        this.iterateObjects(this.mergers, (cell) => {
+            cell.drawItem();
+        });
+    }
 
-        this.belts
-            .slice()
-            .reverse()
-            .forEach((cell, index, list) => {
-                if (cell.isEmpty()) {
-                    this.belts.splice(list.length - 1 - index, 1);
-                    return;
-                }
+    drawObjectDetails() {
+        this.iterateObjects(this.extractors, (cell) => {
+            cell.drawDetails();
+        });
+        this.iterateObjects(this.belts, (cell) => {
+            cell.drawDetails();
+        });
+        this.iterateObjects(this.mergers, (cell) => {
+            cell.drawDetails();
+        });
+    }
 
-                cell.draw();
-            });
+    /**
+     * @callback iteratedCallback
+     * @param {Cell} cell
+     * @param {number} index
+     * @param {Cell[]} list
+     * @returns {*}
+     */
 
-        this.belts
-            .slice()
-            .reverse()
-            .forEach(cell => {
-                cell.drawItem();
-            });
-
-        this.belts
-            .slice()
-            .reverse()
-            .forEach(cell => {
-                cell.work();
-            });
-
-        config.beltAnimationProgress += 1;
+    /**
+     * @param {Array} objects
+     * @param {iteratedCallback} callback
+     */
+    iterateObjects(objects, callback) {
+        objects.forEach(callback);
     }
 }

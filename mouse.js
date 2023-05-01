@@ -82,6 +82,8 @@ export default class Mouse {
                 game.state.createBelt();
             } else if (game.state.inHand.isExtractor()) {
                 game.state.createExtractor();
+            } else if (game.state.inHand.isMerger()) {
+                game.state.createMerger();
             }
 
             return;
