@@ -25,13 +25,13 @@ export default class Mouse {
 
         rect(this.position.x * config.gridSize, this.position.y * config.gridSize, size.x * config.gridSize, size.y * config.gridSize);
 
-        if (config.debug) {
-            if (!game.state.inHand.isEmpty()) {
-                game.state.inHand.drawInfo(this.position);
-            } else if (!game.state.objectMap.positionIsEmpty(this.position)) {
-                game.state.objectMap.getCell(this.position).drawInfo();
-            }
+        if (!game.state.inHand.isEmpty()) {
+            game.state.inHand.drawInfo(this.position);
+        } else if (!game.state.objectMap.positionIsEmpty(this.position)) {
+            game.state.objectMap.getCell(this.position).drawInfo();
+        }
 
+        if (config.debug) {
             fill(255);
             text(this.position.x + ":" + this.position.y, this.position.x * config.gridSize, this.position.y * config.gridSize);
         }
