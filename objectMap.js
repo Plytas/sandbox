@@ -58,12 +58,6 @@ export default class ObjectMap {
 
         let object = this.getCell(position);
 
-        if (object.entity instanceof Belt) {
-            object.acceptItem(object.entity.input.direction.opposite(), new Item());
-
-            return;
-        }
-
         game.engine.iterateOverPositions(object.entity.originPosition, object.entity.size, (callbackPosition) => {
             game.state.objectMap.deleteObjectInPosition(callbackPosition);
         });
