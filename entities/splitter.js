@@ -145,7 +145,7 @@ export default class Splitter extends Entity {
                 continue;
             }
 
-            if (!object.hasInput(this.direction.relativeToDirection(output.direction))) {
+            if (!object.hasInput(output.direction)) {
                 this.currentOutputIndex = (this.currentOutputIndex + 1) % this.outputs.length;
                 continue;
             }
