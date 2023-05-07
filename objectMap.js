@@ -1,5 +1,6 @@
 import {game} from "./game.js";
 import Cell from "./common/cell.js";
+import Belt from "./entities/belt.js";
 
 export default class ObjectMap {
     constructor() {
@@ -57,9 +58,25 @@ export default class ObjectMap {
         }
 
         let object = this.getCell(position);
+        let originPosition = object.entity.originPosition;
+        let size = object.entity.size;
 
-        game.engine.iterateOverPositions(object.entity.originPosition, object.entity.size, (callbackPosition) => {
+        game.engine.iterateOverPositions(originPosition, size, (callbackPosition) => {
             game.state.objectMap.deleteObjectInPosition(callbackPosition);
+        });
+
+        let pos = new p5.Vector(originPosition.x - 1, originPosition.y - 1);
+
+        game.engine.iterateOverPositions(pos, new p5.Vector(size.x + 2, size.y + 2), (callbackPosition) => {
+            if (callbackPosition.equals(game.state.mouse.position)) {
+                return;
+            }
+
+            let object = game.state.objectMap.getCell(callbackPosition)
+
+            if (object.entity instanceof Belt) {
+                object.entity.configureInput();
+            }
         });
     }
 

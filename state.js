@@ -128,7 +128,7 @@ export default class State {
 
         this.objectMap.splitters.push(cell);
 
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 3; i++) {
             let nextPosition = splitter.outputs[i].cell.nextPosition(splitter.outputs[i].direction)
             let object = game.state.objectMap.getCell(nextPosition)
 
