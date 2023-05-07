@@ -18,8 +18,6 @@ export default class Merger extends Entity {
         this.item = null;
         this.progress = 0;
         this.reset = false;
-        /** @type {Direction|null} */
-        this.fromDirection = null;
 
         this.configureInputs();
         this.configureOutput();
@@ -27,9 +25,9 @@ export default class Merger extends Entity {
 
     configureInputs() {
         this.inputs = [
-            new Input(this.originPosition, this.direction.inRelationToDirection(Direction.Down)),
-            new Input(this.originPosition, this.direction.inRelationToDirection(Direction.Left).opposite()),
-            new Input(this.originPosition, this.direction.inRelationToDirection(Direction.Right).opposite()),
+            new Input(this.originPosition, this.direction.relativeToDirection(Direction.Down)),
+            new Input(this.originPosition, this.direction.relativeToDirection(Direction.Left).opposite()),
+            new Input(this.originPosition, this.direction.relativeToDirection(Direction.Right).opposite()),
         ];
         this.currentInputIndex = 0;
     }
@@ -54,6 +52,7 @@ export default class Merger extends Entity {
      */
     draw(position) {
         push();
+
         if (this.isGhost) {
             fill(40, 40, 40);
 
@@ -66,52 +65,9 @@ export default class Merger extends Entity {
 
         //middle
         translate(position.x * config.gridSize + config.gridSize / 2, position.y * config.gridSize + config.gridSize / 2);
-        // circle(0, 0, config.gridSize / 2 + 5)
-        rotate(this.direction.rotation());
 
-        //output
-        translate(- config.gridSize / 2 + 10, -config.gridSize / 2);
-        rect(0, 0, config.gridSize - 20, config.gridSize / 2);
-
-        //output details
-        // push()
-        // fill(255, 225, 25);
-        // translate(+ config.gridSize / 2 - 10, 10)
-        // triangle((-config.gridSize / 8), 0, 0, (-config.gridSize / 8), (config.gridSize / 8), 0);
-        // pop()
-
-        //input
-        this.inputs.forEach((input) => {
-            push();
-
-            translate(+ config.gridSize / 2 - 10, config.gridSize / 2);
-            rotate(input.direction.inRelationToDirection(this.direction).opposite().rotation())
-
-            translate(- config.gridSize / 2 + 10, +config.gridSize / 2);
-            rect(0, 0, config.gridSize - 20, -config.gridSize / 2);
-
-            //input details
-            // push()
-            // fill(255, 225, 25);
-            // translate(+ config.gridSize / 2 - 10, -15)
-            // triangle((-config.gridSize / 8), 0, 0, (-config.gridSize / 8), (config.gridSize / 8), 0);
-            // pop()
-
-            pop();
-        })
-
-        // translate(+ config.gridSize / 2 - 10, config.gridSize / 2);
-        // rotate(this.input.direction.inRelationToDirection(this.direction).opposite().rotation())
-        //
-        // translate(- config.gridSize / 2 + 10, +config.gridSize / 2);
-        // rect(0, 0, config.gridSize - 20, -config.gridSize / 2);
-        //
-        // //input details
-        push()
-        fill(255, 225, 25);
-        translate(+ config.gridSize / 2 - 10, config.gridSize / 2 + 4)
-        triangle((-config.gridSize / 8), 0, 0, (-config.gridSize / 8), (config.gridSize / 8), 0);
-        pop()
+        this.inputs.forEach(/** Input */ input => input.draw());
+        this.output.draw();
 
         pop();
     }
@@ -120,36 +76,19 @@ export default class Merger extends Entity {
      * @param {p5.Vector} position
      */
     drawItem(position) {
+        if (this.isGhost || this.item === null) {
+            return;
+        }
+
         push();
         translate(position.x * config.gridSize + config.gridSize / 2, position.y * config.gridSize + config.gridSize / 2);
 
-        if (!this.isGhost && this.item !== null) {
-            if (this.progress < 30 + (this.item.width / 2) / (config.gridSize / 60)) {
-                if (this.fromDirection.inRelationToDirection(this.direction).value === Direction.Left.value) {
-                    rotate(this.direction.rotation());
-                    translate(-(config.gridSize / 2 - (config.gridSize * this.progress / 60)) - this.item.width / 2, 0)
-                    rotate(-this.direction.rotation());
-
-                    this.item.draw(new p5.Vector(0, 0));
-                } else if (this.fromDirection.inRelationToDirection(this.direction).value === Direction.Right.value) {
-                    rotate(this.direction.rotation());
-                    translate((config.gridSize / 2 - (config.gridSize * this.progress / 60)) + this.item.width / 2, 0)
-                    rotate(-this.direction.rotation());
-
-                    this.item.draw(new p5.Vector(0, 0));
-                } else {
-                    rotate(this.direction.rotation());
-                    translate(0, config.gridSize / 2 - (config.gridSize * this.progress / 60) + this.item.height / 2)
-                    rotate(-this.direction.rotation());
-                    this.item.draw(new p5.Vector(0, 0));
-                }
-            } else {
-                rotate(this.direction.rotation());
-                translate(0, config.gridSize / 2 - (config.gridSize * this.progress / 60) + this.item.height / 2)
-                rotate(-this.direction.rotation());
-                this.item.draw(new p5.Vector(0, 0));
-            }
+        if (this.progress < 30 + (this.item.width / 2) / (config.gridSize / 60)) {
+            this.inputs[this.currentInputIndex].drawItem(this.item, this.progress);
+        } else {
+            this.output.drawItem(this.item, this.progress);
         }
+
         pop();
     }
 
@@ -165,9 +104,7 @@ export default class Merger extends Entity {
 
         this.output.drawInfo(this.isGhost);
 
-        this.inputs.forEach((input) => {
-            input.drawInfo(this.isGhost);
-        });
+        this.inputs.forEach(/** Input */ input => input.drawInfo(this.isGhost));
     }
 
     work() {
@@ -191,8 +128,6 @@ export default class Merger extends Entity {
                         this.progress = 0;
                         continue;
                     }
-
-                    this.fromDirection = input.direction;
 
                     return;
                 }

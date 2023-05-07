@@ -1,5 +1,7 @@
 import Direction from '../common/direction.js';
-import Item from '../items/item.js';
+import Item from "../items/item.js";
+import Input from "../common/input.js";
+import Output from "../common/output.js";
 
 export default class Entity {
     /**
@@ -14,11 +16,11 @@ export default class Entity {
         this.isGhost = isGhost;
         /** @type {Input|null} */
         this.input = null;
-        /** @type {array|null} */
-        this.inputs = null
+        /** @type {Input[]|null} */
+        this.inputs = null;
         /** @type {Output|null} */
         this.output = null;
-        /** @type {array|null} */
+        /** @type {Output[]|null} */
         this.outputs = null;
     }
 
@@ -62,17 +64,45 @@ export default class Entity {
     }
 
     /**
-     * @return {boolean}
+     * @param {p5.Vector} position
+     * @param {Direction} direction
+     * @returns {boolean}
      */
-    hasInput() {
-        return this.input !== null || this.inputs !== null;
+    hasInputAtPositionWithDirection(position, direction) {
+        if (this.input !== null) {
+            return this.input.cell.position().equals(position)
+                && this.input.direction.opposite().equals(direction);
+        }
+
+        if (this.inputs !== null) {
+            return this.inputs.some((input) => {
+                return input.cell.position().equals(position)
+                    && input.direction.opposite().equals(direction)
+            });
+        }
+
+        return false;
     }
 
     /**
-     * @return {boolean}
+     * @param {p5.Vector} position
+     * @param {Direction} direction
+     * @returns {boolean}
      */
-    hasOutput() {
-        return this.output !== null || this.outputs !== null;
+    hasOutputAtPositionWithDirection(position, direction) {
+        if (this.output !== null) {
+            return this.output.cell.position().equals(position)
+                && this.output.direction.opposite().equals(direction);
+        }
+
+        if (this.outputs !== null) {
+            return this.outputs.some((output) => {
+                return output.cell.position().equals(position)
+                    && output.direction.opposite().equals(direction)
+            });
+        }
+
+        return false;
     }
 
     /**

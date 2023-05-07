@@ -93,11 +93,9 @@ export default class Cell {
      * @param {Direction} direction
      * @returns {boolean}
      */
-    hasOutput(direction) {
+    hasInput(direction) {
         return !this.isEmpty()
-            && this.entity.hasOutput()
-            && this.entity.output.cell.position().equals(this.position())
-            && this.entity.output.direction.equals(direction);
+            && this.entity.hasInputAtPositionWithDirection(this.position(), direction);
     }
 
     /**
@@ -110,7 +108,8 @@ export default class Cell {
             return false;
         }
 
-        return this.entity.hasInput() && this.entity.acceptsItem(direction, item);
+        return this.entity.hasInputAtPositionWithDirection(this.position(), direction)
+            && this.entity.acceptsItem(direction, item);
     }
 
     /**
@@ -151,12 +150,22 @@ export default class Cell {
      * @param {Direction} direction
      * @returns {boolean}
      */
+    hasOutput(direction) {
+        return !this.isEmpty()
+            && this.entity.hasOutputAtPositionWithDirection(this.position(), direction);
+    }
+
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
     providesItem(direction) {
         if (this.isEmpty()) {
             return false;
         }
 
-        return this.entity.hasOutput() && this.entity.providesItem(direction);
+        return this.entity.hasOutputAtPositionWithDirection(this.position(), direction)
+            && this.entity.providesItem(direction);
     }
 
     /**

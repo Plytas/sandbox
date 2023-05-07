@@ -84,6 +84,8 @@ export default class Mouse {
                 game.state.createExtractor();
             } else if (game.state.inHand.isMerger()) {
                 game.state.createMerger();
+            } else if (game.state.inHand.isSplitter()) {
+                game.state.createSplitter();
             }
 
             return;

@@ -7,6 +7,7 @@ import {config} from "./config.js";
 import {game} from "./game.js";
 import inHand from "./inHand.js";
 import Merger from "./entities/merger.js";
+import Splitter from "./entities/splitter.js";
 
 export default class State {
     constructor() {
@@ -112,6 +113,28 @@ export default class State {
 
         if (object.entity instanceof Belt) {
             object.entity.configureInput();
+        }
+    }
+
+    createSplitter() {
+        let handPosition = this.mouse.position;
+        let splitter = new Splitter(handPosition, this.inHand.entity.direction);
+        let cell = new Cell(handPosition, splitter);
+        this.objectMap.setCell(cell);
+
+        translate(-config.origin.x, -config.origin.y);
+        scale(config.zoom.scale);
+        cell.draw();
+
+        this.objectMap.splitters.push(cell);
+
+        for (let i = 0; i < 2; i++) {
+            let nextPosition = splitter.outputs[i].cell.nextPosition(splitter.outputs[i].direction)
+            let object = game.state.objectMap.getCell(nextPosition)
+
+            if (object.entity instanceof Belt) {
+                object.entity.configureInput();
+            }
         }
     }
 }

@@ -2,12 +2,11 @@ import Direction from "../common/direction.js";
 import {config} from "../config.js";
 import Entity from "./entity.js";
 import {game} from "../game.js";
+import Item from "../items/item.js";
 import Output from "../common/output.js";
 import Input from "../common/input.js";
-import Cell from "../common/cell.js";
-import Item from "../items/item.js";
 
-export default class Belt extends Entity {
+export default class Splitter extends Entity {
     /**
      * @param {p5.Vector} originPosition
      * @param {Direction} direction
@@ -21,46 +20,20 @@ export default class Belt extends Entity {
         this.reset = false;
 
         this.configureInput();
-        this.configureOutput();
+        this.configureOutputs();
     }
 
     configureInput() {
-        this.input = new Input(this.originPosition, this.inputDirection());
+        this.input = new Input(this.originPosition, this.direction.relativeToDirection(Direction.Down));
     }
 
-    /**
-     * @returns {Direction}
-     */
-    inputDirection() {
-        let cellBehind = (new Cell(this.originPosition).getCellBehind(this.direction));
-
-        if (cellBehind.hasOutput(this.direction.opposite())) {
-            return this.direction.opposite();
-        }
-
-        let cellToTheLeft = (new Cell(this.originPosition).getCellToTheLeft(this.direction));
-        let cellToTheRight = (new Cell(this.originPosition)).getCellToTheRight(this.direction);
-
-        if ((cellToTheLeft.isEmpty() && cellToTheRight.isEmpty())) {
-            return this.direction.opposite();
-        }
-
-        let cellToTheLeftHasOutput = cellToTheLeft.hasOutput(Direction.Left.relativeToDirection(this.direction));
-        let cellToTheRightHasOutput = cellToTheRight.hasOutput(Direction.Right.relativeToDirection(this.direction));
-
-        if ((cellToTheLeftHasOutput && cellToTheRightHasOutput) || (!cellToTheLeftHasOutput && !cellToTheRightHasOutput)) {
-            return this.direction.opposite();
-        }
-
-        if (cellToTheLeftHasOutput) {
-            return Direction.Left.relativeToDirection(this.direction);
-        }
-
-        return Direction.Right.relativeToDirection(this.direction);
-    }
-
-    configureOutput() {
-        this.output = new Output(this.originPosition, this.direction);
+    configureOutputs() {
+        this.outputs = [
+            new Output(this.originPosition, this.direction),
+            new Output(this.originPosition, this.direction.relativeToDirection(Direction.Right)),
+            new Output(this.originPosition, this.direction.relativeToDirection(Direction.Left)),
+        ];
+        this.currentOutputIndex = 0;
     }
 
     /**
@@ -70,7 +43,7 @@ export default class Belt extends Entity {
         super.rotate(clockwise);
 
         this.configureInput();
-        this.configureOutput();
+        this.configureOutputs();
     }
 
     /**
@@ -83,7 +56,7 @@ export default class Belt extends Entity {
             fill(40, 40, 40);
 
             this.originPosition = position;
-            this.configureOutput();
+            this.configureOutputs();
             this.configureInput();
         } else {
             fill(0);
@@ -91,10 +64,9 @@ export default class Belt extends Entity {
 
         //middle
         translate(position.x * config.gridSize + config.gridSize / 2, position.y * config.gridSize + config.gridSize / 2);
-        circle(0, 0, config.gridSize / 2 + 5)
 
         this.input.draw();
-        this.output.draw();
+        this.outputs.forEach(/** Output */ output => output.draw())
 
         pop();
     }
@@ -113,7 +85,7 @@ export default class Belt extends Entity {
         if (this.progress < 30 + (this.item.width / 2) / (config.gridSize / 60)) {
             this.input.drawItem(this.item, this.progress);
         } else {
-            this.output.drawItem(this.item, this.progress);
+            this.outputs[this.currentOutputIndex].drawItem(this.item, this.progress);
         }
 
         pop();
@@ -125,11 +97,12 @@ export default class Belt extends Entity {
     drawInfo(position) {
         if (this.isGhost) {
             this.originPosition = position;
-            this.configureOutput();
+            this.configureOutputs();
             this.configureInput();
         }
 
-        this.output.drawInfo(this.isGhost);
+        this.outputs.forEach(/** Output */ output => output.drawInfo(this.isGhost));
+
         this.input.drawInfo(this.isGhost);
     }
 
@@ -137,6 +110,7 @@ export default class Belt extends Entity {
         if (this.reset) {
             this.reset = false;
             this.item = null;
+            this.currentOutputIndex = (this.currentOutputIndex + 1) % this.outputs.length;
             this.progress = 0;
         }
 
@@ -146,17 +120,40 @@ export default class Belt extends Entity {
         }
 
         if (this.progress === 60) {
-            let nextPosition = this.output.cell.nextPosition(this.output.direction);
-            let object = game.state.objectMap.getCell(nextPosition)
+            let output = this.outputs[this.currentOutputIndex];
+            let object = game.state.objectMap.getCell(output.cell.nextPosition(output.direction));
 
-            if (!object.isEmpty() && object.acceptItem(this.direction, this.item)) {
+            if (!object.isEmpty() && object.acceptItem(output.direction, this.item)) {
                 this.reset = true;
             }
 
             return;
         }
 
+        this.detectOutput();
+
         this.progress += 1;
+    }
+
+    detectOutput() {
+        for (let i = 0; i < 3; i++) {
+            let output = this.outputs[this.currentOutputIndex];
+            let object = game.state.objectMap.getCell(output.cell.nextPosition(output.direction));
+
+            if (object.isEmpty()) {
+                this.currentOutputIndex = (this.currentOutputIndex + 1) % this.outputs.length;
+                continue;
+            }
+
+            if (!object.hasInput(this.direction.relativeToDirection(output.direction))) {
+                this.currentOutputIndex = (this.currentOutputIndex + 1) % this.outputs.length;
+                continue;
+            }
+
+            return;
+        }
+
+        this.currentOutputIndex = 0;
     }
 
     /**
@@ -199,14 +196,26 @@ export default class Belt extends Entity {
         return true;
     }
 
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
     providesItem(direction) {
-        return direction.opposite().equals(this.output.direction);
+        return !direction.opposite().equals(this.input.direction);
     }
 
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
     isProvidingItem(direction) {
         return this.item !== null && this.progress === 60;
     }
 
+    /**
+     * @param {Direction} direction
+     * @returns {Item|null}
+     */
     provideItem(direction) {
         if (this.item === null) {
             return null;
@@ -216,9 +225,14 @@ export default class Belt extends Entity {
             return null;
         }
 
+        if (!this.outputs[this.currentOutputIndex].direction.opposite().equals(direction)) {
+            return null;
+        }
+
         let item = this.item;
         this.item = null;
         this.progress = 0;
+        this.currentOutputIndex = (this.currentOutputIndex + 1) % this.outputs.length;
 
         return item;
     }

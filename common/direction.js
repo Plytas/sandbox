@@ -75,8 +75,8 @@ export default class Direction {
      * @param {Direction} direction
      * @returns {Direction}
      */
-    inRelationToDirection(direction) {
-        return new Direction((4 + this.value - direction.value) % 4);
+    relativeToDirection(direction) {
+        return new Direction((4 + this.value + direction.value) % 4);
     }
 
     /**

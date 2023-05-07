@@ -3,6 +3,7 @@ import Extractor from "./entities/extractor.js";
 import {game} from "./game.js";
 import Direction from "./common/direction.js";
 import Merger from "./entities/merger.js";
+import Splitter from "./entities/splitter.js";
 
 export default class inHand {
     /**
@@ -35,8 +36,18 @@ export default class inHand {
         return this.entity instanceof Extractor;
     }
 
+    /**
+     * @returns {boolean}
+     */
     isMerger() {
         return this.entity instanceof Merger;
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    isSplitter() {
+        return this.entity instanceof Splitter;
     }
 
     usePicker() {
@@ -63,6 +74,10 @@ export default class inHand {
 
     pickMerger() {
         this.entity = new Merger(game.state.mouse.position, this.globalDirection, true);
+    }
+
+    pickSplitter() {
+        this.entity = new Splitter(game.state.mouse.position, this.globalDirection, true);
     }
 
     /**

@@ -34,7 +34,13 @@ export const config = {
         q: 81,
         r: 82,
         s: 83,
+        t: 84,
         w: 87,
         x: 88,
+    },
+    colors: {
+        input: [64, 219, 255],
+        output: [255, 128, 53],
+        yellow: [255, 225, 25],
     }
 }

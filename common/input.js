@@ -1,5 +1,6 @@
 import Cell from "./cell.js";
 import Direction from "./direction.js";
+import Item from "../items/item.js";
 import {config} from "../config.js";
 
 export default class Input {
@@ -12,6 +13,39 @@ export default class Input {
         this.direction = direction;
     }
 
+    draw() {
+        push();
+
+        //base
+        rotate(this.direction.rotation());
+        translate(- config.gridSize / 2 + 10, -config.gridSize / 2);
+        rect(0, 0, config.gridSize - 20, config.gridSize / 2);
+
+        //arrow
+        push()
+        fill(config.colors.input);
+        translate(+ config.gridSize / 2 - 10, 4)
+        triangle((-config.gridSize / 8), 0, 0, (config.gridSize / 8), (config.gridSize / 8), 0);
+        pop()
+
+        pop();
+    }
+
+    /**
+     * @param {Item} item
+     * @param {number} progress
+     */
+    drawItem(item, progress) {
+        push();
+
+        rotate(this.direction.rotation());
+        translate(0, -(config.gridSize / 2 - (config.gridSize * progress / 60)) - item.width / 2);
+
+        item.draw(new p5.Vector(0, 0));
+
+        pop();
+    }
+
     /**
      * @param {boolean} isGhost
      */
@@ -19,9 +53,9 @@ export default class Input {
         push();
 
         if (isGhost) {
-            fill(40, 40, 40, 40);
+            fill([...config.colors.input, 90]);
         } else {
-            fill(255, 225, 25);
+            fill(config.colors.input);
         }
 
         translate(this.cell.x * config.gridSize + config.gridSize / 2, this.cell.y * config.gridSize + config.gridSize / 2);

@@ -1,6 +1,4 @@
 import {game} from "./game.js";
-import Belt from "./entities/belt.js";
-import Item from "./items/item.js";
 import Cell from "./common/cell.js";
 
 export default class ObjectMap {
@@ -13,6 +11,8 @@ export default class ObjectMap {
         this.belts = [];
         /** @type {Cell[]} */
         this.mergers = [];
+        /** @type {Cell[]} */
+        this.splitters = [];
     }
 
     /**
@@ -99,6 +99,14 @@ export default class ObjectMap {
 
             cell.work();
         });
+        this.iterateObjects(this.splitters, (cell, index) => {
+            if (cell.isEmpty()) {
+                this.splitters.splice(index, 1);
+                return;
+            }
+
+            cell.work();
+        });
     }
 
     drawObjects() {
@@ -109,6 +117,9 @@ export default class ObjectMap {
             cell.draw();
         })
         this.iterateObjects(this.mergers, (cell) => {
+            cell.draw();
+        })
+        this.iterateObjects(this.splitters, (cell) => {
             cell.draw();
         })
     }
@@ -123,6 +134,9 @@ export default class ObjectMap {
         this.iterateObjects(this.mergers, (cell) => {
             cell.drawItem();
         });
+        this.iterateObjects(this.splitters, (cell) => {
+            cell.drawItem();
+        });
     }
 
     drawObjectDetails() {
@@ -133,6 +147,9 @@ export default class ObjectMap {
             cell.drawDetails();
         });
         this.iterateObjects(this.mergers, (cell) => {
+            cell.drawDetails();
+        });
+        this.iterateObjects(this.splitters, (cell) => {
             cell.drawDetails();
         });
     }

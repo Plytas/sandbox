@@ -11,6 +11,7 @@ export default class Keymap {
             [config.keyCodes.b]: () => game.state.inHand.pickBelt(),
             [config.keyCodes.m]: () => game.state.inHand.pickExtractor(),
             [config.keyCodes.g]: () => game.state.inHand.pickMerger(),
+            [config.keyCodes.t]: () => game.state.inHand.pickSplitter(),
             [config.keyCodes.f]: () => config.toggleFullscreen(),
         }
     }
