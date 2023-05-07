@@ -1,6 +1,7 @@
 import {config} from "./config.js";
 import {game} from "./game.js";
 import * as debug from "./debug.js";
+import Position from "./common/position.js";
 
 window.preload = function () {
     config.oresSpriteData = loadJSON('sprites/ores.json');
@@ -65,7 +66,7 @@ function touchMove(event) {
             let lastDistance = dist(lastTouches[0].clientX, lastTouches[0].clientY, lastTouches[1].clientX, lastTouches[1].clientY);
 
             if (abs(firstDistance - lastDistance) > 10) {
-                game.camera.performZoom(new p5.Vector(config.canvasSize.x / 2, config.canvasSize.y / 2), firstDistance > lastDistance);
+                game.camera.performZoom(new Position(config.canvasSize.x / 2, config.canvasSize.y / 2), firstDistance > lastDistance);
                 config.touchZoom = [];
             }
         }
@@ -82,7 +83,7 @@ function touchMove(event) {
             let firstTouch = config.touchMovement[0];
             let lastTouch = config.touchMovement[config.touchMovement.length - 1];
 
-            game.camera.performMove(new p5.Vector(lastTouch.clientX - firstTouch.clientX, lastTouch.clientY - firstTouch.clientY));
+            game.camera.performMove(new Position(lastTouch.clientX - firstTouch.clientX, lastTouch.clientY - firstTouch.clientY));
         }
     }
 }

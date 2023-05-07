@@ -4,6 +4,7 @@ import {game} from "./game.js";
 import Direction from "./common/direction.js";
 import Merger from "./entities/merger.js";
 import Splitter from "./entities/splitter.js";
+import Position from "./common/position.js";
 
 export default class inHand {
     /**
@@ -93,7 +94,7 @@ export default class inHand {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     draw(position) {
         if (this.isEmpty()) {
@@ -112,7 +113,7 @@ export default class inHand {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     drawInfo(position) {
         if (this.isEmpty()) {

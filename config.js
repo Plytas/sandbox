@@ -1,3 +1,5 @@
+import Position from "./common/position.js";
+
 export const config = {
     debug: false,
     toggleDebug: () => {
@@ -13,7 +15,7 @@ export const config = {
     scrollStep: 5,
     mapSize: new p5.Vector(2500, 2500),
     canvasSize: new p5.Vector(500, 500),
-    origin: new p5.Vector(0, 0),
+    origin: new Position(0, 0),
 
     touchZoom: [],
     touchMovement: [],

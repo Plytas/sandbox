@@ -1,4 +1,5 @@
 import { config } from "../config.js";
+import Position from "../common/position.js";
 
 export default class Item {
     constructor() {
@@ -12,7 +13,7 @@ export default class Item {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     draw(position) {
 

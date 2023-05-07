@@ -5,10 +5,11 @@ import {game} from "../game.js";
 import Item from "../items/item.js";
 import Output from "../common/output.js";
 import Input from "../common/input.js";
+import Position from "../common/position.js";
 
 export default class Merger extends Entity {
     /**
-     * @param {p5.Vector} originPosition
+     * @param {Position} originPosition
      * @param {Direction} direction
      * @param {boolean} isGhost
      */
@@ -48,7 +49,7 @@ export default class Merger extends Entity {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     draw(position) {
         push();
@@ -73,7 +74,7 @@ export default class Merger extends Entity {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     drawItem(position) {
         if (this.isGhost || this.item === null) {
@@ -93,7 +94,7 @@ export default class Merger extends Entity {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     drawInfo(position) {
         if (this.isGhost) {

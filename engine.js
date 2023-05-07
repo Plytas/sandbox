@@ -1,5 +1,6 @@
 import Keymap from "./keymap.js";
 import {config} from "./config.js";
+import Position from "./common/position.js";
 
 export default class Engine {
     constructor() {
@@ -8,13 +9,13 @@ export default class Engine {
 
     /**
      * @callback iteratedPosition
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {number} loops
      * @returns {*}
      */
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {p5.Vector} size
      * @param {iteratedPosition} callback
      * @returns {*}
@@ -25,7 +26,7 @@ export default class Engine {
 
         for (let i = 0; i < size.x; i++) {
             for (let j = 0; j < size.y; j++) {
-                callbackResponse = callback(new p5.Vector(position.x + i, position.y + j), loops);
+                callbackResponse = callback(position.relativePosition(i, j), loops);
 
                 if (callbackResponse !== undefined) {
                     return callbackResponse;
@@ -37,7 +38,7 @@ export default class Engine {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @returns {boolean}
      */
     positionIsOutOfBounds(position) {

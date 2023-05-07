@@ -1,21 +1,22 @@
 import {config} from "./config.js";
+import Position from "./common/position.js";
 
 export default class Camera {
     move() {
         if (keyIsDown(LEFT_ARROW) || keyIsDown(config.keyCodes.a)) {
-            this.performMove(new p5.Vector(-config.scrollStep, 0));
+            this.performMove(new Position(-config.scrollStep, 0));
         }
 
         if (keyIsDown(RIGHT_ARROW) || keyIsDown(config.keyCodes.d)) {
-            this.performMove(new p5.Vector(config.scrollStep, 0));
+            this.performMove(new Position(config.scrollStep, 0));
         }
 
         if (keyIsDown(UP_ARROW) || keyIsDown(config.keyCodes.w)) {
-            this.performMove(new p5.Vector(0, -config.scrollStep));
+            this.performMove(new Position(0, -config.scrollStep));
         }
 
         if (keyIsDown(DOWN_ARROW) || keyIsDown(config.keyCodes.s)) {
-            this.performMove(new p5.Vector(0, config.scrollStep));
+            this.performMove(new Position(0, config.scrollStep));
         }
 
         translate(-config.origin.x, -config.origin.y);
@@ -23,15 +24,18 @@ export default class Camera {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     performMove(position) {
-        config.origin.x += position.x;
-        config.origin.y += position.y;
+        config.origin.setPosition(position);
 
         this.constrainOrigin();
     }
 
+    /**
+     * @param {Position} point
+     * @param {boolean} out
+     */
     performZoom(point, out = false) {
         let step = out ? -config.zoom.step : +config.zoom.step;
         let newScale = max(config.zoom.min, min(config.zoom.max, config.zoom.scale + step));

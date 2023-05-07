@@ -36,9 +36,9 @@ export default class State {
         }
 
         cell.rotate(clockwise);
-        let pos = new p5.Vector(cell.entity.originPosition.x - 1, cell.entity.originPosition.y - 1);
+        let startPosition= cell.entity.originPosition.relativePosition(-1, -1);
 
-        game.engine.iterateOverPositions(pos, new p5.Vector(cell.entity.size.x + 2, cell.entity.size.y + 2), (callbackPosition) => {
+        game.engine.iterateOverPositions(startPosition, new p5.Vector(cell.entity.size.x + 2, cell.entity.size.y + 2), (callbackPosition) => {
             if (callbackPosition.equals(this.mouse.position)) {
                 return;
             }

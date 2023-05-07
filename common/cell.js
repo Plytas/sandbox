@@ -1,30 +1,17 @@
 import Direction from "./direction.js";
 import Item from "../items/item.js";
 import {game} from "../game.js";
+import Position from "./position.js";
 
 export default class Cell {
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {Entity|null} entity
      */
     constructor(position, entity = null) {
-        this.x = position.x;
-        this.y = position.y;
+        this.position = position;
         /** @type {Entity|null} */
         this.entity = entity;
-    }
-
-    /**
-     * @param {Cell|null} cell
-     * @returns {p5.Vector}
-     */
-    position(cell = null) {
-        if (cell === null) {
-            return new p5.Vector(this.x, this.y);
-        }
-
-        this.x = cell.x;
-        this.y = cell.y;
     }
 
     /**
@@ -43,7 +30,7 @@ export default class Cell {
             return;
         }
 
-        this.entity.draw(this.position());
+        this.entity.draw(this.position);
     }
 
     drawItem() {
@@ -51,7 +38,7 @@ export default class Cell {
             return;
         }
 
-        this.entity.drawItem(this.position());
+        this.entity.drawItem(this.position);
     }
 
     drawDetails() {
@@ -59,7 +46,7 @@ export default class Cell {
             return;
         }
 
-        this.entity.drawDetails(this.position());
+        this.entity.drawDetails(this.position);
     }
 
     drawInfo() {
@@ -67,7 +54,7 @@ export default class Cell {
             return;
         }
 
-        this.entity.drawInfo(this.position());
+        this.entity.drawInfo(this.position);
     }
 
     work() {
@@ -95,7 +82,7 @@ export default class Cell {
      */
     hasInput(direction) {
         return !this.isEmpty()
-            && this.entity.hasInputAtPositionWithDirection(this.position(), direction);
+            && this.entity.hasInputAtPositionWithDirection(this.position, direction);
     }
 
     /**
@@ -108,7 +95,7 @@ export default class Cell {
             return false;
         }
 
-        return this.entity.hasInputAtPositionWithDirection(this.position(), direction)
+        return this.entity.hasInputAtPositionWithDirection(this.position, direction)
             && this.entity.acceptsItem(direction, item);
     }
 
@@ -152,7 +139,7 @@ export default class Cell {
      */
     hasOutput(direction) {
         return !this.isEmpty()
-            && this.entity.hasOutputAtPositionWithDirection(this.position(), direction);
+            && this.entity.hasOutputAtPositionWithDirection(this.position, direction);
     }
 
     /**
@@ -164,7 +151,7 @@ export default class Cell {
             return false;
         }
 
-        return this.entity.hasOutputAtPositionWithDirection(this.position(), direction)
+        return this.entity.hasOutputAtPositionWithDirection(this.position, direction)
             && this.entity.providesItem(direction);
     }
 
@@ -202,7 +189,7 @@ export default class Cell {
 
     /**
      * @param {Direction|null} direction
-     * @returns {p5.Vector|null}
+     * @returns {Position|null}
      */
     nextPosition(direction = null) {
         if (direction === null) {
@@ -216,13 +203,13 @@ export default class Cell {
 
         switch (direction.value) {
             case Direction.Up.value:
-                return new p5.Vector(this.x, this.y - 1);
+                return this.position.relativePosition(0, -1);
             case Direction.Down.value:
-                return new p5.Vector(this.x, this.y + 1);
+                return this.position.relativePosition(0, 1);
             case Direction.Left.value:
-                return new p5.Vector(this.x - 1, this.y);
+                return this.position.relativePosition(-1, 0);
             case Direction.Right.value:
-                return new p5.Vector(this.x + 1, this.y);
+                return this.position.relativePosition(1, 0);
         }
     }
 
@@ -238,18 +225,18 @@ export default class Cell {
 
     /**
      * @param {Direction} direction
-     * @return {p5.Vector}
+     * @return {Position}
      */
     getPositionBehind(direction) {
         switch (direction.value) {
             case Direction.Up.value:
-                return new p5.Vector(this.x, this.y + 1);
+                this.position.relativePosition(0, 1);
             case Direction.Down.value:
-                return new p5.Vector(this.x, this.y - 1);
+                return this.position.relativePosition(0, -1);
             case Direction.Left.value:
-                return new p5.Vector(this.x + 1, this.y);
+                return this.position.relativePosition(1, 0);
             case Direction.Right.value:
-                return new p5.Vector(this.x - 1, this.y);
+                return this.position.relativePosition(-1, 0);
         }
     }
 
@@ -265,18 +252,18 @@ export default class Cell {
 
     /**
      * @param {Direction} direction
-     * @return {p5.Vector}
+     * @return {Position}
      */
     getPositionToTheLeft(direction) {
         switch (direction.value) {
             case Direction.Up.value:
-                return new p5.Vector(this.x - 1, this.y);
+                return this.position.relativePosition(-1, 0);
             case Direction.Down.value:
-                return new p5.Vector(this.x + 1, this.y);
+                return this.position.relativePosition(1, 0);
             case Direction.Left.value:
-                return new p5.Vector(this.x, this.y + 1);
+                return this.position.relativePosition(0, 1);
             case Direction.Right.value:
-                return new p5.Vector(this.x, this.y - 1);
+                return this.position.relativePosition(0, -1);
         }
     }
 
@@ -292,18 +279,18 @@ export default class Cell {
 
     /**
      * @param {Direction} direction
-     * @return {p5.Vector}
+     * @return {Position}
      */
     getPositionToTheRight(direction) {
         switch (direction.value) {
             case Direction.Up.value:
-                return new p5.Vector(this.x + 1, this.y);
+                return this.position.relativePosition(1, 0);
             case Direction.Down.value:
-                return new p5.Vector(this.x - 1, this.y);
+                return this.position.relativePosition(-1, 0);
             case Direction.Left.value:
-                return new p5.Vector(this.x, this.y - 1);
+                return this.position.relativePosition(0, -1);
             case Direction.Right.value:
-                return new p5.Vector(this.x, this.y + 1);
+                return this.position.relativePosition(0, 1);
         }
     }
 }

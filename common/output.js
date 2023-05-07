@@ -2,10 +2,11 @@ import {config} from "../config.js";
 import Cell from "./cell.js";
 import Item from "../items/item.js";
 import Direction from "./direction.js";
+import Position from "./position.js";
 
 export default class Output {
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {Direction} direction
      */
     constructor(position, direction) {
@@ -41,7 +42,7 @@ export default class Output {
         rotate(this.direction.rotation());
         translate(0, (config.gridSize / 2 - (config.gridSize * progress / 60)) + item.width / 2);
 
-        item.draw(new p5.Vector(0, 0));
+        item.draw(new Position(0, 0));
 
         pop();
     }
@@ -58,7 +59,7 @@ export default class Output {
             fill(config.colors.output);
         }
 
-        translate(this.cell.x * config.gridSize + config.gridSize / 2, this.cell.y * config.gridSize + config.gridSize / 2);
+        translate(this.cell.position.x * config.gridSize + config.gridSize / 2, this.cell.position.y * config.gridSize + config.gridSize / 2);
         rotate(this.direction.rotation());
         translate(0, -config.gridSize / 2);
         rectMode(CENTER);

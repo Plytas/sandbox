@@ -4,10 +4,11 @@ import {config} from "../config.js";
 import Item from "../items/item.js";
 import Entity from "./entity.js";
 import {game} from "../game.js";
+import Position from "../common/position.js";
 
 export default class Extractor extends Entity {
     /**
-     * @param {p5.Vector} originPosition
+     * @param {Position} originPosition
      * @param {Direction} direction
      * @param {boolean} isGhost
      */
@@ -28,18 +29,18 @@ export default class Extractor extends Entity {
     }
 
     /**
-     * @returns {p5.Vector}
+     * @returns {Position}
      */
     outputPosition() {
         switch (this.direction.value) {
             case Direction.Up.value:
-                return new p5.Vector(this.originPosition.x, this.originPosition.y);
+                return this.originPosition.relativePosition(0, 0);
             case Direction.Right.value:
-                return new p5.Vector(this.originPosition.x + 1, this.originPosition.y);
+                return this.originPosition.relativePosition(1, 0);
             case Direction.Down.value:
-                return new p5.Vector(this.originPosition.x + 1, this.originPosition.y + 1);
+                return this.originPosition.relativePosition(1, 1);
             case Direction.Left.value:
-                return new p5.Vector(this.originPosition.x, this.originPosition.y + 1);
+                return this.originPosition.relativePosition(0, 1);
         }
     }
 
@@ -69,7 +70,7 @@ export default class Extractor extends Entity {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     draw(position) {
 
@@ -85,7 +86,7 @@ export default class Extractor extends Entity {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     drawItem(position) {
         if (this.isGhost || this.item === null) {
@@ -94,17 +95,17 @@ export default class Extractor extends Entity {
 
         push();
 
-        translate(this.output.cell.x * config.gridSize + config.gridSize / 2, this.output.cell.y * config.gridSize + config.gridSize / 2);
+        translate(this.output.cell.position.x * config.gridSize + config.gridSize / 2, this.output.cell.position.y * config.gridSize + config.gridSize / 2);
         rotate(this.output.direction.rotation());
         translate(0, config.gridSize / 2 - (config.gridSize * this.steps / this.craftingTime) + this.item.height / 2)
         rotate(-this.output.direction.rotation());
-        this.item.draw(new p5.Vector(0, 0));
+        this.item.draw(new Position(0, 0));
 
         pop();
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     drawInfo(position) {
         if (this.isGhost) {
@@ -115,14 +116,26 @@ export default class Extractor extends Entity {
         this.output.drawInfo(this.isGhost);
     }
 
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
     providesItem(direction) {
         return direction.opposite().equals(this.output.direction);
     }
 
+    /**
+     * @param {Direction} direction
+     * @returns {boolean}
+     */
     isProvidingItem(direction) {
         return this.item !== null && this.steps >= this.craftingTime;
     }
 
+    /**
+     * @param {Direction} direction
+     * @returns {Item|null}
+     */
     provideItem(direction) {
         if (this.item === null) {
             return null;

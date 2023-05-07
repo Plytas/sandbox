@@ -1,10 +1,11 @@
 import {config} from "./config.js";
 import {game} from "./game.js";
+import Position from "./common/position.js";
 
 export default class Mouse {
     precalculatePosition() {
-        /** @type {p5.Vector} */
-        this.position = new p5.Vector(
+        /** @type {Position} */
+        this.position = new Position(
             Math.floor((mouseX + config.origin.x) / (config.gridSize * config.zoom.scale)),
             Math.floor((mouseY + config.origin.y) / (config.gridSize * config.zoom.scale)),
         );
@@ -51,7 +52,7 @@ export default class Mouse {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {p5.Vector} size
      * @returns {void}
      */
@@ -95,11 +96,11 @@ export default class Mouse {
     }
 
     wheel(event) {
-        game.camera.performZoom(new p5.Vector(event.x, event.y), event.deltaY > 0)
+        game.camera.performZoom(new Position(event.x, event.y), event.deltaY > 0)
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {p5.Vector} size
      * @return boolean|void
      */
@@ -112,7 +113,7 @@ export default class Mouse {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {p5.Vector} size
      * @return boolean|void
      */

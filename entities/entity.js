@@ -1,11 +1,12 @@
 import Direction from '../common/direction.js';
+import Position from "../common/position.js";
 import Item from "../items/item.js";
 import Input from "../common/input.js";
 import Output from "../common/output.js";
 
 export default class Entity {
     /**
-     * @param {p5.Vector} originPosition
+     * @param {Position} originPosition
      * @param {Direction} direction
      * @param {boolean} isGhost
      */
@@ -32,28 +33,28 @@ export default class Entity {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     draw(position) {
 
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     drawItem(position) {
 
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     drawInfo(position) {
 
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     drawDetails(position) {
 
@@ -64,19 +65,19 @@ export default class Entity {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {Direction} direction
      * @returns {boolean}
      */
     hasInputAtPositionWithDirection(position, direction) {
         if (this.input !== null) {
-            return this.input.cell.position().equals(position)
+            return this.input.cell.position.equals(position)
                 && this.input.direction.opposite().equals(direction);
         }
 
         if (this.inputs !== null) {
             return this.inputs.some((input) => {
-                return input.cell.position().equals(position)
+                return input.cell.position.equals(position)
                     && input.direction.opposite().equals(direction)
             });
         }
@@ -85,19 +86,19 @@ export default class Entity {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @param {Direction} direction
      * @returns {boolean}
      */
     hasOutputAtPositionWithDirection(position, direction) {
         if (this.output !== null) {
-            return this.output.cell.position().equals(position)
+            return this.output.cell.position.equals(position)
                 && this.output.direction.opposite().equals(direction);
         }
 
         if (this.outputs !== null) {
             return this.outputs.some((output) => {
-                return output.cell.position().equals(position)
+                return output.cell.position.equals(position)
                     && output.direction.opposite().equals(direction)
             });
         }

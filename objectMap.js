@@ -1,6 +1,7 @@
 import {game} from "./game.js";
 import Cell from "./common/cell.js";
 import Belt from "./entities/belt.js";
+import Position from "./common/position.js";
 
 export default class ObjectMap {
     constructor() {
@@ -17,7 +18,7 @@ export default class ObjectMap {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @returns boolean
      */
     positionIsEmpty(position) {
@@ -30,15 +31,15 @@ export default class ObjectMap {
      * @param {Cell} cell
      */
     setCell(cell) {
-        if (this.cells[cell.x] === undefined) {
-            this.cells[cell.x] = [];
+        if (this.cells[cell.position.x] === undefined) {
+            this.cells[cell.position.x] = [];
         }
 
-        this.cells[cell.x][cell.y] = cell;
+        this.cells[cell.position.x][cell.position.y] = cell;
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      * @returns {Cell}
      */
     getCell(position) {
@@ -50,7 +51,7 @@ export default class ObjectMap {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     performActionOnPosition(position) {
         if (this.positionIsEmpty(position)) {
@@ -65,9 +66,9 @@ export default class ObjectMap {
             game.state.objectMap.deleteObjectInPosition(callbackPosition);
         });
 
-        let pos = new p5.Vector(originPosition.x - 1, originPosition.y - 1);
+        let startPosition = originPosition.relativePosition(-1, -1);
 
-        game.engine.iterateOverPositions(pos, new p5.Vector(size.x + 2, size.y + 2), (callbackPosition) => {
+        game.engine.iterateOverPositions(startPosition, new p5.Vector(size.x + 2, size.y + 2), (callbackPosition) => {
             if (callbackPosition.equals(game.state.mouse.position)) {
                 return;
             }
@@ -81,7 +82,7 @@ export default class ObjectMap {
     }
 
     /**
-     * @param {p5.Vector} position
+     * @param {Position} position
      */
     deleteObjectInPosition(position) {
         if (this.positionIsEmpty(position)) {
