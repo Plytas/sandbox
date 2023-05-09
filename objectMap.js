@@ -2,6 +2,9 @@ import {game} from "./game.js";
 import Cell from "./common/cell.js";
 import Belt from "./entities/belt.js";
 import Position from "./common/position.js";
+import Extractor from "./entities/extractor.js";
+import Merger from "./entities/merger.js";
+import Splitter from "./entities/splitter.js";
 
 export default class ObjectMap {
     constructor() {
@@ -15,6 +18,37 @@ export default class ObjectMap {
         this.mergers = [];
         /** @type {Cell[]} */
         this.splitters = [];
+    }
+
+    /**
+     * @param {Cell[]} cells
+     */
+    recreateFromCells(cells) {
+        this.cells = [];
+        this.belts = [];
+        this.extractors = [];
+        this.mergers = [];
+        this.splitters = [];
+
+        for (let i = 0; i < cells.length; i++) {
+            let cell = cells[i];
+
+            this.setCell(cell);
+
+            if (cell.entity instanceof Belt) {
+                this.belts.push(cell);
+            } else if (cell.entity instanceof Extractor) {
+                if (!cell.position.equals(cell.entity.originPosition)) {
+                    continue;
+                }
+
+                this.extractors.push(cell);
+            } else if (cell.entity instanceof Merger) {
+                this.mergers.push(cell);
+            } else if (cell.entity instanceof Splitter) {
+                this.splitters.push(cell);
+            }
+        }
     }
 
     /**
@@ -66,9 +100,7 @@ export default class ObjectMap {
             game.state.objectMap.deleteObjectInPosition(callbackPosition);
         });
 
-        let startPosition = originPosition.relativePosition(-1, -1);
-
-        game.engine.iterateOverPositions(startPosition, new p5.Vector(size.x + 2, size.y + 2), (callbackPosition) => {
+        game.engine.iterateOverPositions(originPosition.relativePosition(-1, -1), size.relativeSize(2, 2), (callbackPosition) => {
             if (callbackPosition.equals(game.state.mouse.position)) {
                 return;
             }
@@ -90,6 +122,7 @@ export default class ObjectMap {
         }
 
         this.cells[position.x][position.y].destroy();
+        this.cells[position.x][position.y] = undefined;
     }
 
     processObjects() {

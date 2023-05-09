@@ -1,6 +1,7 @@
 import Keymap from "./keymap.js";
 import {config} from "./config.js";
 import Position from "./common/position.js";
+import Size from "./common/size.js";
 
 export default class Engine {
     constructor() {
@@ -16,7 +17,7 @@ export default class Engine {
 
     /**
      * @param {Position} position
-     * @param {p5.Vector} size
+     * @param {Size} size
      * @param {iteratedPosition} callback
      * @returns {*}
      */

@@ -1,10 +1,12 @@
 import Position from "./common/position.js";
+import Size from "./common/size.js";
 
 export const config = {
     debug: false,
     toggleDebug: () => {
         config.debug = !config.debug;
     },
+    pause: false,
     gridSize: 50,
     zoom: {
         min: 0.4,
@@ -13,8 +15,8 @@ export const config = {
         scale: 1,
     },
     scrollStep: 5,
-    mapSize: new p5.Vector(2500, 2500),
-    canvasSize: new p5.Vector(500, 500),
+    mapSize: new Size(2500, 2500),
+    canvasSize: new Size(500, 500),
     origin: new Position(0, 0),
 
     touchZoom: [],
@@ -32,7 +34,10 @@ export const config = {
         d: 68,
         f: 70,
         g: 71,
+        k: 75,
+        l: 76,
         m: 77,
+        p: 80,
         q: 81,
         r: 82,
         s: 83,

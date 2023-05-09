@@ -1,6 +1,7 @@
 import {config} from "./config.js";
 import {game} from "./game.js";
 import Position from "./common/position.js";
+import Size from "./common/size.js";
 
 export default class Mouse {
     precalculatePosition() {
@@ -41,19 +42,19 @@ export default class Mouse {
     }
 
     /**
-     * @returns {p5.Vector}
+     * @returns {Size}
      */
     cellSize() {
         if (!game.state.inHand.isEmpty()) {
             return game.state.inHand.entity.size;
         }
 
-        return new p5.Vector(1, 1);
+        return new Size(1, 1);
     }
 
     /**
      * @param {Position} position
-     * @param {p5.Vector} size
+     * @param {Size} size
      * @returns {void}
      */
     cellFill(position, size) {
@@ -101,7 +102,7 @@ export default class Mouse {
 
     /**
      * @param {Position} position
-     * @param {p5.Vector} size
+     * @param {Size} size
      * @return boolean|void
      */
     anyPositionIsOutOfBounds(position, size) {
@@ -114,7 +115,7 @@ export default class Mouse {
 
     /**
      * @param {Position} position
-     * @param {p5.Vector} size
+     * @param {Size} size
      * @return boolean|void
      */
     anyPositionIsNotEmpty(position, size) {

@@ -3,6 +3,7 @@ import Position from "../common/position.js";
 import Item from "../items/item.js";
 import Input from "../common/input.js";
 import Output from "../common/output.js";
+import Size from "../common/size.js";
 
 export default class Entity {
     /**
@@ -12,7 +13,7 @@ export default class Entity {
      */
     constructor(originPosition, direction = Direction.Up, isGhost = false) {
         this.originPosition = originPosition;
-        this.size = new p5.Vector(1, 1);
+        this.size = new Size(1, 1);
         this.direction = direction;
         this.isGhost = isGhost;
         /** @type {Input|null} */

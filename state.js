@@ -8,16 +8,32 @@ import {game} from "./game.js";
 import inHand from "./inHand.js";
 import Merger from "./entities/merger.js";
 import Splitter from "./entities/splitter.js";
+import SaveState from "./savestate.js";
 
 export default class State {
     constructor() {
         this.mouse = new Mouse();
         this.objectMap = new ObjectMap();
         this.inHand = new inHand();
+        this.saveState = new SaveState();
+    }
+
+    togglePause() {
+        config.pause = !config.pause;
+    }
+
+    save() {
+        this.saveState.save();
+    }
+
+    load() {
+        this.saveState.load();
     }
 
     processObjects() {
-        this.objectMap.processObjects();
+        if (!config.pause) {
+            this.objectMap.processObjects();
+        }
         this.objectMap.drawObjects();
         this.objectMap.drawItems();
         this.objectMap.drawObjectDetails();
@@ -36,9 +52,8 @@ export default class State {
         }
 
         cell.rotate(clockwise);
-        let startPosition= cell.entity.originPosition.relativePosition(-1, -1);
 
-        game.engine.iterateOverPositions(startPosition, new p5.Vector(cell.entity.size.x + 2, cell.entity.size.y + 2), (callbackPosition) => {
+        game.engine.iterateOverPositions(cell.entity.originPosition.relativePosition(-1, -1), cell.entity.size.relativeSize(2, 2,), (callbackPosition) => {
             if (callbackPosition.equals(this.mouse.position)) {
                 return;
             }

@@ -5,6 +5,7 @@ import Item from "../items/item.js";
 import Entity from "./entity.js";
 import {game} from "../game.js";
 import Position from "../common/position.js";
+import Size from "../common/size.js";
 
 export default class Extractor extends Entity {
     /**
@@ -14,7 +15,7 @@ export default class Extractor extends Entity {
      */
     constructor(originPosition, direction = Direction.Up, isGhost = false) {
         super(originPosition, direction, isGhost);
-        this.size = new p5.Vector(2, 2);
+        this.size = new Size(2, 2);
         this.speed = 0.5;
         this.craftingTime = 120;
         this.count = 0;
