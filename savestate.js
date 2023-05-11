@@ -11,6 +11,16 @@ import Item from "./items/item.js";
 import Input from "./common/input.js";
 import Output from "./common/output.js";
 import Size from "./common/size.js";
+import History from "./history.js";
+import BeltCreateAction from "./actions/beltCreateAction.js";
+import BeltDestroyAction from "./actions/beltDestroyAction.js";
+import ExtractorCreateAction from "./actions/extractorCreateAction.js";
+import ExtractorDestroyAction from "./actions/extractorDestroyAction.js";
+import MergerCreateAction from "./actions/mergerCreateAction.js";
+import MergerDestroyAction from "./actions/mergerDestroyAction.js";
+import SplitterCreateAction from "./actions/splitterCreateAction.js";
+import SplitterDestroyAction from "./actions/splitterDestroyAction.js";
+import RotateAction from "./actions/rotateAction.js";
 
 export default class SaveState {
     constructor() {
@@ -20,7 +30,7 @@ export default class SaveState {
     save() {
         localStorage.setItem('save', JSON.stringify({
             cells: this.serializer.serialize(this.cellsToSave()),
-            //TODO: history
+            history: this.serializer.serialize(this.historyToSave())
         }));
     }
 
@@ -47,10 +57,15 @@ export default class SaveState {
         return cells;
     }
 
+    historyToSave() {
+        return game.state.history;
+    }
+
     load() {
         let save = JSON.parse(localStorage.getItem('save'));
 
         game.state.objectMap.recreateFromCells(this.serializer.unserialize(save.cells, this.classMap()));
+        game.state.history = this.serializer.unserialize(save.history, this.classMap());
     }
 
     classMap() {
@@ -66,6 +81,16 @@ export default class SaveState {
             'Input': () => new Input(new Position(0, 0), Direction.Up),
             'Output': () => new Output(new Position(0, 0), Direction.Up),
             'Size': () => new Size(0, 0),
+            'History': () => new History(),
+            'BeltCreateAction': () => new BeltCreateAction(new Position(0, 0), Direction.Up),
+            'BeltDestroyAction': () => new BeltDestroyAction(new Position(0, 0), Direction.Up),
+            'ExtractorCreateAction': () => new ExtractorCreateAction(new Position(0, 0), Direction.Up),
+            'ExtractorDestroyAction': () => new ExtractorDestroyAction(new Position(0, 0), Direction.Up),
+            'MergerCreateAction': () => new MergerCreateAction(new Position(0, 0), Direction.Up),
+            'MergerDestroyAction': () => new MergerDestroyAction(new Position(0, 0), Direction.Up),
+            'SplitterCreateAction': () => new SplitterCreateAction(new Position(0, 0), Direction.Up),
+            'SplitterDestroyAction': () => new SplitterDestroyAction(new Position(0, 0), Direction.Up),
+            'RotateAction': () => new RotateAction(new Position(0, 0), true),
         };
     }
 }

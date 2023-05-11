@@ -1,10 +1,12 @@
 import {game} from "./game.js";
 import Cell from "./common/cell.js";
 import Belt from "./entities/belt.js";
-import Position from "./common/position.js";
 import Extractor from "./entities/extractor.js";
 import Merger from "./entities/merger.js";
 import Splitter from "./entities/splitter.js";
+import {config} from "./config.js";
+import Position from "./common/position.js";
+import Direction from "./common/direction.js";
 
 export default class ObjectMap {
     constructor() {
@@ -87,17 +89,13 @@ export default class ObjectMap {
     /**
      * @param {Position} position
      */
-    performActionOnPosition(position) {
-        if (this.positionIsEmpty(position)) {
-            return;
-        }
-
+    deleteObjectInPosition(position) {
         let object = this.getCell(position);
         let originPosition = object.entity.originPosition;
         let size = object.entity.size;
 
         game.engine.iterateOverPositions(originPosition, size, (callbackPosition) => {
-            game.state.objectMap.deleteObjectInPosition(callbackPosition);
+            game.state.objectMap.clearOutPosition(callbackPosition);
         });
 
         game.engine.iterateOverPositions(originPosition.relativePosition(-1, -1), size.relativeSize(2, 2), (callbackPosition) => {
@@ -116,7 +114,7 @@ export default class ObjectMap {
     /**
      * @param {Position} position
      */
-    deleteObjectInPosition(position) {
+    clearOutPosition(position) {
         if (this.positionIsEmpty(position)) {
             return;
         }
@@ -219,5 +217,104 @@ export default class ObjectMap {
      */
     iterateObjects(objects, callback) {
         objects.forEach(callback);
+    }
+
+    /**
+     * @param {Position} position
+     * @param {Direction} direction
+     */
+    createBelt(position, direction) {
+        let belt = new Belt(position, direction);
+        let cell = new Cell(position, belt);
+        this.setCell(cell);
+
+        translate(-config.origin.x, -config.origin.y);
+        scale(config.zoom.scale);
+        cell.draw();
+
+        this.belts.push(cell);
+
+        let nextPosition = belt.output.cell.nextPosition(belt.output.direction)
+        let object = this.getCell(nextPosition)
+
+        if (object.entity instanceof Belt) {
+            object.entity.configureInput();
+        }
+    }
+
+    /**
+     * @param {Position} position
+     * @param {Direction} direction
+     */
+    createExtractor(position, direction) {
+        let extractor = new Extractor(position, direction);
+
+        game.engine.iterateOverPositions(position, extractor.size, (callbackPosition, loops) => {
+            let cell = new Cell(callbackPosition, extractor);
+            this.setCell(cell);
+
+            if (loops === 0) {
+                translate(-config.origin.x, -config.origin.y);
+                scale(config.zoom.scale);
+                cell.draw();
+
+                this.extractors.push(cell);
+            }
+        });
+
+        let nextPosition = extractor.output.cell.nextPosition(extractor.output.direction)
+        let object = game.state.objectMap.getCell(nextPosition)
+
+        if (object.entity instanceof Belt) {
+            object.entity.configureInput();
+        }
+    }
+
+    /**
+     * @param {Position} position
+     * @param {Direction} direction
+     */
+    createMerger(position, direction) {
+        let merger = new Merger(position, direction);
+        let cell = new Cell(position, merger);
+        this.setCell(cell);
+
+        translate(-config.origin.x, -config.origin.y);
+        scale(config.zoom.scale);
+        cell.draw();
+
+        this.mergers.push(cell);
+
+        let nextPosition = merger.output.cell.nextPosition(merger.output.direction)
+        let object = game.state.objectMap.getCell(nextPosition)
+
+        if (object.entity instanceof Belt) {
+            object.entity.configureInput();
+        }
+    }
+
+    /**
+     * @param {Position} position
+     * @param {Direction} direction
+     */
+    createSplitter(position, direction) {
+        let splitter = new Splitter(position, direction);
+        let cell = new Cell(position, splitter);
+        this.setCell(cell);
+
+        translate(-config.origin.x, -config.origin.y);
+        scale(config.zoom.scale);
+        cell.draw();
+
+        this.splitters.push(cell);
+
+        for (let i = 0; i < 3; i++) {
+            let nextPosition = splitter.outputs[i].cell.nextPosition(splitter.outputs[i].direction)
+            let object = game.state.objectMap.getCell(nextPosition)
+
+            if (object.entity instanceof Belt) {
+                object.entity.configureInput();
+            }
+        }
     }
 }

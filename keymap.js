@@ -16,6 +16,7 @@ export default class Keymap {
             [config.keyCodes.p]: () => game.state.togglePause(),
             [config.keyCodes.k]: () => game.state.save(),
             [config.keyCodes.l]: () => game.state.load(),
+            [config.keyCodes.z]: (event) => game.state.handleHistory(event),
         }
     }
 

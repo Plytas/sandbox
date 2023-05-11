@@ -1,3 +1,5 @@
+import {dump} from "./debug.js";
+
 export default class Serializer {
     /**
      * @param {Object|Array} object
@@ -108,6 +110,10 @@ export default class Serializer {
             }
 
             properties[property] = this.unserialize(serialized[property], classMap);
+        }
+
+        if (!classMap[serialized.class]) {
+            dump('Class not found: ' + serialized.class);
         }
 
         let target = classMap[serialized.class]();

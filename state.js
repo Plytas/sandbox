@@ -1,6 +1,5 @@
 import Mouse from "./mouse.js";
 import ObjectMap from "./objectMap.js";
-import Cell from "./common/cell.js";
 import Belt from "./entities/belt.js";
 import Extractor from "./entities/extractor.js";
 import {config} from "./config.js";
@@ -9,6 +8,18 @@ import inHand from "./inHand.js";
 import Merger from "./entities/merger.js";
 import Splitter from "./entities/splitter.js";
 import SaveState from "./savestate.js";
+import History from "./history.js";
+import BeltCreateAction from "./actions/beltCreateAction.js";
+import BeltDestroyAction from "./actions/beltDestroyAction.js";
+import ExtractorCreateAction from "./actions/extractorCreateAction.js";
+import ExtractorDestroyAction from "./actions/extractorDestroyAction.js";
+import MergerCreateAction from "./actions/mergerCreateAction.js";
+import MergerDestroyAction from "./actions/mergerDestroyAction.js";
+import SplitterCreateAction from "./actions/splitterCreateAction.js";
+import SplitterDestroyAction from "./actions/splitterDestroyAction.js";
+import RotateAction from "./actions/rotateAction.js";
+import Cell from "./common/cell.js";
+import Position from "./common/position.js";
 
 export default class State {
     constructor() {
@@ -16,6 +27,7 @@ export default class State {
         this.objectMap = new ObjectMap();
         this.inHand = new inHand();
         this.saveState = new SaveState();
+        this.history = new History();
     }
 
     togglePause() {
@@ -30,6 +42,19 @@ export default class State {
         this.saveState.load();
     }
 
+    handleHistory(event) {
+        if (!event.ctrlKey) {
+            return;
+        }
+
+        if (event.shiftKey) {
+            this.history.redo();
+            return;
+        }
+
+        this.history.undo();
+    }
+
     processObjects() {
         if (!config.pause) {
             this.objectMap.processObjects();
@@ -39,6 +64,9 @@ export default class State {
         this.objectMap.drawObjectDetails();
     }
 
+    /**
+     * @param {boolean} clockwise
+     */
     rotateOnMouse(clockwise = true) {
         if (!this.inHand.isEmpty()) {
             this.inHand.rotate(clockwise);
@@ -51,105 +79,74 @@ export default class State {
             return;
         }
 
-        cell.rotate(clockwise);
-
-        game.engine.iterateOverPositions(cell.entity.originPosition.relativePosition(-1, -1), cell.entity.size.relativeSize(2, 2,), (callbackPosition) => {
-            if (callbackPosition.equals(this.mouse.position)) {
-                return;
-            }
-
-            let object = game.state.objectMap.getCell(callbackPosition)
-
-            if (object.entity instanceof Belt) {
-                object.entity.configureInput();
-            }
-        });
+        (new RotateAction(this.mouse.position, clockwise)).execute();
     }
 
-    createBelt() {
-        let handPosition = this.mouse.position;
-        let belt = new Belt(handPosition, this.inHand.entity.direction);
-        let cell = new Cell(handPosition, belt);
-        this.objectMap.setCell(cell);
-
-        translate(-config.origin.x, -config.origin.y);
-        scale(config.zoom.scale);
-        cell.draw();
-
-        this.objectMap.belts.push(cell);
-
-        let nextPosition = belt.output.cell.nextPosition(belt.output.direction)
-        let object = game.state.objectMap.getCell(nextPosition)
-
-        if (object.entity instanceof Belt) {
-            object.entity.configureInput();
-        }
-    }
-
-    createExtractor() {
-        let handPosition = this.mouse.position;
-        let extractor = new Extractor(handPosition, this.inHand.entity.direction);
-
-        game.engine.iterateOverPositions(handPosition, extractor.size, (callbackPosition, loops) => {
-            let cell = new Cell(callbackPosition, extractor);
-            this.objectMap.setCell(cell);
-
-            if (loops === 0) {
-                translate(-config.origin.x, -config.origin.y);
-                scale(config.zoom.scale);
-                cell.draw();
-
-                this.objectMap.extractors.push(cell);
+    /**
+     * @param {Position} position
+     * @param {Size} size
+     * @return boolean|void
+     */
+    anyPositionIsNotEmpty(position, size) {
+        return game.engine.iterateOverPositions(position, size, (callbackPosition) => {
+            if (!game.state.objectMap.positionIsEmpty(callbackPosition)) {
+                return true;
             }
         });
+    }
 
-        let nextPosition = extractor.output.cell.nextPosition(extractor.output.direction)
-        let object = game.state.objectMap.getCell(nextPosition)
+    /**
+     * @param {Position} position
+     */
+    performActionOnPosition(position) {
+        if (!this.inHand.isEmpty()) {
+            this.createFromInHand(position);
 
-        if (object.entity instanceof Belt) {
-            object.entity.configureInput();
+            return;
+        }
+
+        if (this.objectMap.positionIsEmpty(position)) {
+            return;
+        }
+
+        let cell = this.objectMap.getCell(position);
+
+        this.performActionOnCell(cell);
+    }
+
+    /**
+     * @param {Position} position
+     */
+    createFromInHand(position) {
+        let size = this.inHand.entity.size;
+
+        if (this.anyPositionIsNotEmpty(position, size)) {
+            return;
+        }
+
+        if (this.inHand.isBelt()) {
+            (new BeltCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
+        } else if (this.inHand.isExtractor()) {
+            (new ExtractorCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
+        } else if (this.inHand.isMerger()) {
+            (new MergerCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
+        } else if (this.inHand.isSplitter()) {
+            (new SplitterCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
         }
     }
 
-    createMerger() {
-        let handPosition = this.mouse.position;
-        let merger = new Merger(handPosition, this.inHand.entity.direction);
-        let cell = new Cell(handPosition, merger);
-        this.objectMap.setCell(cell);
-
-        translate(-config.origin.x, -config.origin.y);
-        scale(config.zoom.scale);
-        cell.draw();
-
-        this.objectMap.mergers.push(cell);
-
-        let nextPosition = merger.output.cell.nextPosition(merger.output.direction)
-        let object = game.state.objectMap.getCell(nextPosition)
-
-        if (object.entity instanceof Belt) {
-            object.entity.configureInput();
-        }
-    }
-
-    createSplitter() {
-        let handPosition = this.mouse.position;
-        let splitter = new Splitter(handPosition, this.inHand.entity.direction);
-        let cell = new Cell(handPosition, splitter);
-        this.objectMap.setCell(cell);
-
-        translate(-config.origin.x, -config.origin.y);
-        scale(config.zoom.scale);
-        cell.draw();
-
-        this.objectMap.splitters.push(cell);
-
-        for (let i = 0; i < 3; i++) {
-            let nextPosition = splitter.outputs[i].cell.nextPosition(splitter.outputs[i].direction)
-            let object = game.state.objectMap.getCell(nextPosition)
-
-            if (object.entity instanceof Belt) {
-                object.entity.configureInput();
-            }
+    /**
+     * @param {Cell} cell
+     */
+    performActionOnCell(cell) {
+        if (cell.entity instanceof Belt) {
+            (new BeltDestroyAction(cell.entity.originPosition, cell.entity.direction)).execute();
+        } else if (cell.entity instanceof Extractor) {
+            (new ExtractorDestroyAction(cell.entity.originPosition, cell.entity.direction)).execute();
+        } else if (cell.entity instanceof Merger) {
+            (new MergerDestroyAction(cell.entity.originPosition, cell.entity.direction)).execute();
+        } else if (cell.entity instanceof Splitter) {
+            (new SplitterDestroyAction(cell.entity.originPosition, cell.entity.direction)).execute();
         }
     }
 }

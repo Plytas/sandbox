@@ -44,6 +44,7 @@ export const config = {
         t: 84,
         w: 87,
         x: 88,
+        z: 90,
     },
     colors: {
         input: [64, 219, 255],

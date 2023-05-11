@@ -1,6 +1,7 @@
 import Direction from "./direction.js";
-import Item from "../items/item.js";
+import Belt from "../entities/belt.js";
 import {game} from "../game.js";
+import Item from "../items/item.js";
 import Position from "./position.js";
 
 export default class Cell {
@@ -74,6 +75,18 @@ export default class Cell {
         }
 
         this.entity.rotate(clockwise);
+
+        game.engine.iterateOverPositions(this.entity.originPosition.relativePosition(-1, -1), this.entity.size.relativeSize(2, 2,), (callbackPosition) => {
+            if (callbackPosition.equals(this.position)) {
+                return;
+            }
+
+            let object = game.state.objectMap.getCell(callbackPosition)
+
+            if (object.entity instanceof Belt) {
+                object.entity.configureInput();
+            }
+        });
     }
 
     /**
@@ -230,7 +243,7 @@ export default class Cell {
     getPositionBehind(direction) {
         switch (direction.value) {
             case Direction.Up.value:
-                this.position.relativePosition(0, 1);
+                return this.position.relativePosition(0, 1);
             case Direction.Down.value:
                 return this.position.relativePosition(0, -1);
             case Direction.Left.value:

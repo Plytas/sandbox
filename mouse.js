@@ -75,25 +75,7 @@ export default class Mouse {
             return;
         }
 
-        if (!game.state.inHand.isEmpty()) {
-            if (this.anyPositionIsNotEmpty(position, size)) {
-                return;
-            }
-
-            if (game.state.inHand.isBelt()) {
-                game.state.createBelt();
-            } else if (game.state.inHand.isExtractor()) {
-                game.state.createExtractor();
-            } else if (game.state.inHand.isMerger()) {
-                game.state.createMerger();
-            } else if (game.state.inHand.isSplitter()) {
-                game.state.createSplitter();
-            }
-
-            return;
-        }
-
-        game.state.objectMap.performActionOnPosition(position);
+        game.state.performActionOnPosition(position);
     }
 
     wheel(event) {
@@ -108,19 +90,6 @@ export default class Mouse {
     anyPositionIsOutOfBounds(position, size) {
         return game.engine.iterateOverPositions(position, size, (callbackPosition) => {
             if (game.engine.positionIsOutOfBounds(callbackPosition)) {
-                return true;
-            }
-        });
-    }
-
-    /**
-     * @param {Position} position
-     * @param {Size} size
-     * @return boolean|void
-     */
-    anyPositionIsNotEmpty(position, size) {
-        return game.engine.iterateOverPositions(position, size, (callbackPosition) => {
-            if (!game.state.objectMap.positionIsEmpty(callbackPosition)) {
                 return true;
             }
         });
