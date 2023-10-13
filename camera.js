@@ -27,7 +27,7 @@ export default class Camera {
      * @param {Position} position
      */
     performMove(position) {
-        config.origin.setPosition(position);
+        config.origin.addPosition(position);
 
         this.constrainOrigin();
     }

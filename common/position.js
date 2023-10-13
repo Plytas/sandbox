@@ -27,6 +27,14 @@ export default class Position {
 
     /**
      * @param {Position} position
+     */
+    addPosition(position) {
+        this.x += position.x;
+        this.y += position.y;
+    }
+
+    /**
+     * @param {Position} position
      * @returns {boolean}
      */
     equals(position) {
