@@ -1,12 +1,14 @@
 import {game} from "./game.js";
+import {config} from "./config.js";
 import Cell from "./common/cell.js";
 import Belt from "./entities/belt.js";
 import Extractor from "./entities/extractor.js";
 import Merger from "./entities/merger.js";
 import Splitter from "./entities/splitter.js";
-import {config} from "./config.js";
+import UndergroundBeltEntrance from "./entities/undergroundBeltEntrance.js";
 import Position from "./common/position.js";
 import Direction from "./common/direction.js";
+import Entity from "./entities/entity.js";
 
 export default class ObjectMap {
     constructor() {
@@ -20,6 +22,8 @@ export default class ObjectMap {
         this.mergers = [];
         /** @type {Cell[]} */
         this.splitters = [];
+        /** @type {Cell[]} */
+        this.undergroundBelts = [];
     }
 
     /**
@@ -31,6 +35,7 @@ export default class ObjectMap {
         this.extractors = [];
         this.mergers = [];
         this.splitters = [];
+        this.undergroundBelts = [];
 
         for (let i = 0; i < cells.length; i++) {
             let cell = cells[i];
@@ -49,6 +54,8 @@ export default class ObjectMap {
                 this.mergers.push(cell);
             } else if (cell.entity instanceof Splitter) {
                 this.splitters.push(cell);
+            } else if (cell.entity instanceof UndergroundBeltEntrance) {
+                this.undergroundBelts.push(cell);
             }
         }
     }
@@ -156,6 +163,14 @@ export default class ObjectMap {
 
             cell.work();
         });
+        this.iterateObjects(this.undergroundBelts, (cell, index) => {
+            if (cell.isEmpty()) {
+                this.undergroundBelts.splice(index, 1);
+                return;
+            }
+
+            cell.work();
+        });
     }
 
     drawObjects() {
@@ -169,6 +184,9 @@ export default class ObjectMap {
             cell.draw();
         })
         this.iterateObjects(this.splitters, (cell) => {
+            cell.draw();
+        })
+        this.iterateObjects(this.undergroundBelts, (cell) => {
             cell.draw();
         })
     }
@@ -186,6 +204,9 @@ export default class ObjectMap {
         this.iterateObjects(this.splitters, (cell) => {
             cell.drawItem();
         });
+        this.iterateObjects(this.undergroundBelts, (cell) => {
+            cell.drawItem();
+        });
     }
 
     drawObjectDetails() {
@@ -199,6 +220,9 @@ export default class ObjectMap {
             cell.drawDetails();
         });
         this.iterateObjects(this.splitters, (cell) => {
+            cell.drawDetails();
+        });
+        this.iterateObjects(this.undergroundBelts, (cell) => {
             cell.drawDetails();
         });
     }
@@ -315,6 +339,34 @@ export default class ObjectMap {
             if (object.entity instanceof Belt) {
                 object.entity.configureInput();
             }
+        }
+    }
+
+    /**
+     * @param {Position} position
+     * @param {Direction} direction
+     * @param {string} side
+     */
+    createUndergroundBelt(position, direction, side) {
+        let undergroundBelt = new UndergroundBeltEntrance(position, direction);
+        if (side === 'output') {
+            undergroundBelt.switchSide();
+        }
+
+        let cell = new Cell(position, undergroundBelt);
+        this.setCell(cell);
+
+        translate(-config.origin.x, -config.origin.y);
+        scale(config.zoom.scale);
+        cell.draw();
+
+        this.undergroundBelts.push(cell);
+
+        let nextPosition = undergroundBelt.output.cell.nextPosition(undergroundBelt.output.direction)
+        let object = this.getCell(nextPosition)
+
+        if (object.entity instanceof UndergroundBeltEntrance) {
+            object.entity.configureInput();
         }
     }
 }

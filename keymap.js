@@ -12,11 +12,13 @@ export default class Keymap {
             [config.keyCodes.m]: () => game.state.inHand.pickExtractor(),
             [config.keyCodes.g]: () => game.state.inHand.pickMerger(),
             [config.keyCodes.t]: () => game.state.inHand.pickSplitter(),
+            [config.keyCodes.u]: () => game.state.inHand.pickUndergroundBelt(),
             [config.keyCodes.f]: () => config.toggleFullscreen(),
             [config.keyCodes.p]: () => game.state.togglePause(),
             [config.keyCodes.k]: () => game.state.save(),
             [config.keyCodes.l]: () => game.state.load(),
             [config.keyCodes.z]: (event) => game.state.handleHistory(event),
+            [config.keyCodes.bracketRight]: () => game.state.stepForward(),
         }
     }
 

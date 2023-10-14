@@ -2,11 +2,12 @@ import Mouse from "./mouse.js";
 import ObjectMap from "./objectMap.js";
 import Belt from "./entities/belt.js";
 import Extractor from "./entities/extractor.js";
+import Merger from "./entities/merger.js";
+import Splitter from "./entities/splitter.js";
+import UndergroundBeltEntrance from "./entities/undergroundBeltEntrance.js";
 import {config} from "./config.js";
 import {game} from "./game.js";
 import inHand from "./inHand.js";
-import Merger from "./entities/merger.js";
-import Splitter from "./entities/splitter.js";
 import SaveState from "./savestate.js";
 import History from "./history.js";
 import BeltCreateAction from "./actions/beltCreateAction.js";
@@ -17,6 +18,8 @@ import MergerCreateAction from "./actions/mergerCreateAction.js";
 import MergerDestroyAction from "./actions/mergerDestroyAction.js";
 import SplitterCreateAction from "./actions/splitterCreateAction.js";
 import SplitterDestroyAction from "./actions/splitterDestroyAction.js";
+import UndergroundBeltCreateAction from "./actions/undergroundBeltCreateAction.js";
+import UndergroundBeltDestroyAction from "./actions/undergroundBeltDestroyAction.js";
 import RotateAction from "./actions/rotateAction.js";
 import Cell from "./common/cell.js";
 import Position from "./common/position.js";
@@ -32,6 +35,12 @@ export default class State {
 
     togglePause() {
         config.pause = !config.pause;
+    }
+
+    stepForward() {
+        if (config.pause) {
+            this.objectMap.processObjects();
+        }
     }
 
     save() {
@@ -124,14 +133,17 @@ export default class State {
             return;
         }
 
-        if (this.inHand.isBelt()) {
+        if (this.inHand.entity instanceof Belt) {
             (new BeltCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
-        } else if (this.inHand.isExtractor()) {
+        } else if (this.inHand.entity instanceof Extractor) {
             (new ExtractorCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
-        } else if (this.inHand.isMerger()) {
+        } else if (this.inHand.entity instanceof Merger) {
             (new MergerCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
-        } else if (this.inHand.isSplitter()) {
+        } else if (this.inHand.entity instanceof Splitter) {
             (new SplitterCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
+        } else if (this.inHand.entity instanceof UndergroundBeltEntrance) {
+            (new UndergroundBeltCreateAction(this.mouse.position, this.inHand.entity.direction, this.inHand.entity.side)).execute();
+            this.inHand.entity.switchSide();
         }
     }
 
@@ -147,6 +159,8 @@ export default class State {
             (new MergerDestroyAction(cell.entity.originPosition, cell.entity.direction)).execute();
         } else if (cell.entity instanceof Splitter) {
             (new SplitterDestroyAction(cell.entity.originPosition, cell.entity.direction)).execute();
+        } else if (cell.entity instanceof UndergroundBeltEntrance) {
+            (new UndergroundBeltDestroyAction(cell.entity.originPosition, cell.entity.direction, cell.entity.side)).execute();
         }
     }
 }

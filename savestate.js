@@ -20,7 +20,11 @@ import MergerCreateAction from "./actions/mergerCreateAction.js";
 import MergerDestroyAction from "./actions/mergerDestroyAction.js";
 import SplitterCreateAction from "./actions/splitterCreateAction.js";
 import SplitterDestroyAction from "./actions/splitterDestroyAction.js";
+import UndergroundBeltCreateAction from "./actions/undergroundBeltCreateAction.js";
+import UndergroundBeltDestroyAction from "./actions/undergroundBeltDestroyAction.js";
 import RotateAction from "./actions/rotateAction.js";
+import UndergroundBeltEntrance from "./entities/undergroundBeltEntrance.js";
+import UndergroundBelt from "./entities/undergroundBelt.js";
 
 export default class SaveState {
     constructor() {
@@ -74,6 +78,8 @@ export default class SaveState {
             'Extractor': () => new Extractor(new Position(0, 0), Direction.Up),
             'Merger': () => new Merger(new Position(0, 0), Direction.Up),
             'Splitter': () => new Splitter(new Position(0, 0), Direction.Up),
+            'UndergroundBeltEntrance': () => new UndergroundBeltEntrance(new Position(0, 0), Direction.Up),
+            'UndergroundBelt': () => new UndergroundBelt(new Position(0, 0), Direction.Up, false, 0),
             'Cell': () => new Cell(new Position(0, 0)),
             'Item': () => new Item(),
             'Position': () => new Position(0, 0),
@@ -90,6 +96,8 @@ export default class SaveState {
             'MergerDestroyAction': () => new MergerDestroyAction(new Position(0, 0), Direction.Up),
             'SplitterCreateAction': () => new SplitterCreateAction(new Position(0, 0), Direction.Up),
             'SplitterDestroyAction': () => new SplitterDestroyAction(new Position(0, 0), Direction.Up),
+            'UndergroundBeltCreateAction': () => new UndergroundBeltCreateAction(new Position(0, 0), Direction.Up, 'input'),
+            'UndergroundBeltDestroyAction': () => new UndergroundBeltDestroyAction(new Position(0, 0), Direction.Up, 'input'),
             'RotateAction': () => new RotateAction(new Position(0, 0), true),
         };
     }

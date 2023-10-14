@@ -42,9 +42,11 @@ export const config = {
         r: 82,
         s: 83,
         t: 84,
+        u: 85,
         w: 87,
         x: 88,
         z: 90,
+        bracketRight: 221,
     },
     colors: {
         input: [64, 219, 255],

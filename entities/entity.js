@@ -12,6 +12,7 @@ export default class Entity {
      * @param {boolean} isGhost
      */
     constructor(originPosition, direction = Direction.Up, isGhost = false) {
+        /** @type {Position} */
         this.originPosition = originPosition;
         this.size = new Size(1, 1);
         this.direction = direction;

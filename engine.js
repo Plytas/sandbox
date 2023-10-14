@@ -40,6 +40,29 @@ export default class Engine {
 
     /**
      * @param {Position} position
+     * @param {Direction} direction
+     * @param {iteratedPosition} callback
+     * @param {number} numberOfCells
+     * @returns {*}
+     */
+    iterateOverPositionsInDirection(position, direction, callback, numberOfCells = 1) {
+        let callbackResponse;
+        let loops = 0;
+
+        for (let i = 0; i < numberOfCells; i++) {
+            position = position.nextPositionInDirection(direction);
+            callbackResponse = callback(position, loops);
+
+            if (callbackResponse !== undefined) {
+                return callbackResponse;
+            }
+
+            loops++;
+        }
+    }
+
+    /**
+     * @param {Position} position
      * @returns {boolean}
      */
     positionIsOutOfBounds(position) {

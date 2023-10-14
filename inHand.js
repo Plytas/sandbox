@@ -1,10 +1,12 @@
+import {game} from "./game.js";
 import Belt from "./entities/belt.js";
 import Extractor from "./entities/extractor.js";
-import {game} from "./game.js";
-import Direction from "./common/direction.js";
 import Merger from "./entities/merger.js";
 import Splitter from "./entities/splitter.js";
+import UndergroundBeltEntrance from "./entities/undergroundBeltEntrance.js";
+import Direction from "./common/direction.js";
 import Position from "./common/position.js";
+import Entity from "./entities/entity.js";
 
 export default class inHand {
     /**
@@ -23,34 +25,6 @@ export default class inHand {
         return this.entity === null;
     }
 
-    /**
-     * @return {boolean}
-     */
-    isBelt() {
-        return this.entity instanceof Belt;
-    }
-
-    /**
-     * @return {boolean}
-     */
-    isExtractor() {
-        return this.entity instanceof Extractor;
-    }
-
-    /**
-     * @returns {boolean}
-     */
-    isMerger() {
-        return this.entity instanceof Merger;
-    }
-
-    /**
-     * @returns {boolean}
-     */
-    isSplitter() {
-        return this.entity instanceof Splitter;
-    }
-
     usePicker() {
         if (!this.isEmpty()) {
             this.entity = null;
@@ -62,6 +36,10 @@ export default class inHand {
         if (!cellObject.isEmpty()) {
             this.globalDirection = cellObject.entity.direction;
             this.entity = new cellObject.entity.constructor(game.state.mouse.position, this.globalDirection, true);
+
+            if (cellObject.entity instanceof UndergroundBeltEntrance && cellObject.entity.side === 'output') {
+                this.entity.switchSide();
+            }
         }
     }
 
@@ -79,6 +57,10 @@ export default class inHand {
 
     pickSplitter() {
         this.entity = new Splitter(game.state.mouse.position, this.globalDirection, true);
+    }
+
+    pickUndergroundBelt() {
+        this.entity = new UndergroundBeltEntrance(game.state.mouse.position, this.globalDirection, true);
     }
 
     /**
