@@ -13,6 +13,7 @@ export default class Keymap {
             [config.keyCodes.g]: () => game.state.inHand.pickMerger(),
             [config.keyCodes.t]: () => game.state.inHand.pickSplitter(),
             [config.keyCodes.u]: () => game.state.inHand.pickUndergroundBelt(),
+            [config.keyCodes.i]: () => game.state.inHand.pickSink(),
             [config.keyCodes.f]: () => config.toggleFullscreen(),
             [config.keyCodes.p]: () => game.state.togglePause(),
             [config.keyCodes.k]: () => game.state.save(),

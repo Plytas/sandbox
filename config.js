@@ -34,6 +34,7 @@ export const config = {
         d: 68,
         f: 70,
         g: 71,
+        i: 73,
         k: 75,
         l: 76,
         m: 77,

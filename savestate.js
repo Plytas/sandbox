@@ -25,6 +25,9 @@ import UndergroundBeltDestroyAction from "./actions/undergroundBeltDestroyAction
 import RotateAction from "./actions/rotateAction.js";
 import UndergroundBeltEntrance from "./entities/undergroundBeltEntrance.js";
 import UndergroundBelt from "./entities/undergroundBelt.js";
+import Sink from "./entities/sink.js";
+import SinkCreateAction from "./actions/sinkCreateAction.js";
+import SinkDestroyAction from "./actions/sinkDestroyAction.js";
 
 export default class SaveState {
     constructor() {
@@ -80,6 +83,7 @@ export default class SaveState {
             'Splitter': () => new Splitter(new Position(0, 0), Direction.Up),
             'UndergroundBeltEntrance': () => new UndergroundBeltEntrance(new Position(0, 0), Direction.Up),
             'UndergroundBelt': () => new UndergroundBelt(new Position(0, 0), Direction.Up, false, 0),
+            'Sink': () => new Sink(new Position(0, 0), Direction.Up),
             'Cell': () => new Cell(new Position(0, 0)),
             'Item': () => new Item(),
             'Position': () => new Position(0, 0),
@@ -98,6 +102,8 @@ export default class SaveState {
             'SplitterDestroyAction': () => new SplitterDestroyAction(new Position(0, 0), Direction.Up),
             'UndergroundBeltCreateAction': () => new UndergroundBeltCreateAction(new Position(0, 0), Direction.Up, 'input'),
             'UndergroundBeltDestroyAction': () => new UndergroundBeltDestroyAction(new Position(0, 0), Direction.Up, 'input'),
+            'SinkCreateAction': () => new SinkCreateAction(new Position(0, 0), Direction.Up),
+            'SinkDestroyAction': () => new SinkDestroyAction(new Position(0, 0), Direction.Up),
             'RotateAction': () => new RotateAction(new Position(0, 0), true),
         };
     }

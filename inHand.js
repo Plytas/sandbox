@@ -4,6 +4,7 @@ import Extractor from "./entities/extractor.js";
 import Merger from "./entities/merger.js";
 import Splitter from "./entities/splitter.js";
 import UndergroundBeltEntrance from "./entities/undergroundBeltEntrance.js";
+import Sink from "./entities/sink.js";
 import Direction from "./common/direction.js";
 import Position from "./common/position.js";
 import Entity from "./entities/entity.js";
@@ -61,6 +62,10 @@ export default class inHand {
 
     pickUndergroundBelt() {
         this.entity = new UndergroundBeltEntrance(game.state.mouse.position, this.globalDirection, true);
+    }
+
+    pickSink() {
+        this.entity = new Sink(game.state.mouse.position, this.globalDirection, true);
     }
 
     /**

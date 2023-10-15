@@ -5,6 +5,7 @@ import Extractor from "./entities/extractor.js";
 import Merger from "./entities/merger.js";
 import Splitter from "./entities/splitter.js";
 import UndergroundBeltEntrance from "./entities/undergroundBeltEntrance.js";
+import Sink from "./entities/sink.js";
 import {config} from "./config.js";
 import {game} from "./game.js";
 import inHand from "./inHand.js";
@@ -20,6 +21,8 @@ import SplitterCreateAction from "./actions/splitterCreateAction.js";
 import SplitterDestroyAction from "./actions/splitterDestroyAction.js";
 import UndergroundBeltCreateAction from "./actions/undergroundBeltCreateAction.js";
 import UndergroundBeltDestroyAction from "./actions/undergroundBeltDestroyAction.js";
+import SinkCreateAction from "./actions/sinkCreateAction.js";
+import SinkDestroyAction from "./actions/sinkDestroyAction.js";
 import RotateAction from "./actions/rotateAction.js";
 import Cell from "./common/cell.js";
 import Position from "./common/position.js";
@@ -144,6 +147,8 @@ export default class State {
         } else if (this.inHand.entity instanceof UndergroundBeltEntrance) {
             (new UndergroundBeltCreateAction(this.mouse.position, this.inHand.entity.direction, this.inHand.entity.side)).execute();
             this.inHand.entity.switchSide();
+        } else if (this.inHand.entity instanceof Sink) {
+            (new SinkCreateAction(this.mouse.position, this.inHand.entity.direction)).execute();
         }
     }
 
@@ -161,6 +166,8 @@ export default class State {
             (new SplitterDestroyAction(cell.entity.originPosition, cell.entity.direction)).execute();
         } else if (cell.entity instanceof UndergroundBeltEntrance) {
             (new UndergroundBeltDestroyAction(cell.entity.originPosition, cell.entity.direction, cell.entity.side)).execute();
+        } else if (cell.entity instanceof Sink) {
+            (new SinkDestroyAction(cell.entity.originPosition, cell.entity.direction)).execute();
         }
     }
 }
