@@ -40,7 +40,16 @@ export default class ObjectMap {
         for (let i = 0; i < cells.length; i++) {
             let cell = cells[i];
 
-            this.setCell(cell);
+            if (!cell.entity.size.isMultiCell()) {
+                this.setCell(cell);
+            } else {
+                if (cell.position.equals(cell.entity.originPosition)) {
+                    game.engine.iterateOverPositions(cell.position, cell.entity.size, (callbackPosition) => {
+                        let newCell = new Cell(callbackPosition, cell.entity);
+                        this.setCell(newCell);
+                    });
+                }
+            }
 
             if (cell.entity instanceof Belt) {
                 this.belts.push(cell);
